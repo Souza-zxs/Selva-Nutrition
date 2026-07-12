@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors — Selva dossiê palette (verde floresta + dourado manteiga + terrosos) */
+  --color-surface: #0e1b12;
+  --color-surface-dim: #0e1b12;
+  --color-surface-bright: #2b3d34;
+  --color-surface-container-lowest: #1a140f;
+  --color-surface-container-low: #16231a;
+  --color-surface-container: #1a271d;
+  --color-surface-container-high: #201f18;
+  --color-surface-container-highest: #26392f;
+  --color-on-surface: #f3efe4;
+  --color-on-surface-variant: #9fb3a0;
+  --color-inverse-surface: #f3efe4;
+  --color-inverse-on-surface: #22342b;
+  --color-outline: #8c928c;
+  --color-outline-variant: #424843;
+  --color-surface-tint: #c9a227;
+  --color-primary: #c9a227;
+  --color-on-primary: #0e1b12;
+  --color-primary-container: #0e1b12;
+  --color-on-primary-container: #d9c7a8;
+  --color-inverse-primary: #466553;
+  --color-secondary: #c9a227;
+  --color-on-secondary: #0e1b12;
+  --color-secondary-container: #604403;
+  --color-on-secondary-container: #dab36a;
+  --color-tertiary: #6b4a32;
+  --color-on-tertiary: #f3efe4;
+  --color-tertiary-container: #382500;
+  --color-on-tertiary-container: #d9c7a8;
+  --color-error: #b5573e;
+  --color-on-error: #f3efe4;
+  --color-error-container: #4a2318;
+  --color-on-error-container: #e8b8a8;
+  --color-primary-fixed: #c8ebd4;
+  --color-primary-fixed-dim: #accfb8;
+  --color-on-primary-fixed: #022113;
+  --color-on-primary-fixed-variant: #2f4d3c;
+  --color-secondary-fixed: #ffdea5;
+  --color-secondary-fixed-dim: #e9c176;
+  --color-on-secondary-fixed: #261900;
+  --color-on-secondary-fixed-variant: #5d4201;
+  --color-tertiary-fixed: #ffdea9;
+  --color-tertiary-fixed-dim: #e4c289;
+  --color-on-tertiary-fixed: #271900;
+  --color-on-tertiary-fixed-variant: #5a4316;
+  --color-background: #0e1b12;
+  --color-on-background: #f3efe4;
+  --color-surface-variant: #26392f;
+
+  /* Accent tokens — used sparingly on secondary elements (dossiê: "complementar, não substituir") */
+  --color-accent-leather: #6b4a32;
+  --color-accent-sand: #d9c7a8;
+
+  /* Typography */
+  --font-sans: "Hanken Grotesk", system-ui, sans-serif;
+  --font-serif: "Fraunces", "Georgia", serif;
+
+  --text-display-lg: 64px;
+  --text-display-lg--line-height: 1.1;
+  --text-display-lg--letter-spacing: -0.04em;
+  --text-display-lg--font-weight: 800;
+
+  --text-headline-lg: 40px;
+  --text-headline-lg--line-height: 1.2;
+  --text-headline-lg--letter-spacing: -0.02em;
+  --text-headline-lg--font-weight: 700;
+
+  --text-headline-lg-mobile: 32px;
+  --text-headline-lg-mobile--line-height: 1.2;
+  --text-headline-lg-mobile--font-weight: 700;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.6;
+  --text-body-lg--letter-spacing: 0.01em;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.5;
+  --text-body-md--font-weight: 400;
+
+  --text-label-caps: 12px;
+  --text-label-caps--line-height: 1;
+  --text-label-caps--letter-spacing: 0.15em;
+  --text-label-caps--font-weight: 700;
+
+  /* Radii */
+  --radius-sm: 0.125rem;
+  --radius-DEFAULT: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  /* Spacing */
+  --spacing-unit: 8px;
+  --spacing-container-max: 1280px;
+  --spacing-gutter: 24px;
+  --spacing-margin-desktop: 64px;
+  --spacing-margin-mobile: 20px;
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.gold-glow {
+  text-shadow: 0 0 20px rgba(201, 162, 39, 0.2);
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #c9a227 0%, #6b4a32 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.carved-well {
+  box-shadow:
+    inset 2px 2px 10px rgba(0, 0, 0, 0.5),
+    inset -1px -1px 2px rgba(159, 179, 160, 0.05);
+}
+
+.metallic-border {
+  border: 1px solid rgba(201, 162, 39, 0.25);
+}
+
+.hero-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(14, 27, 18, 0.3) 0%,
+    rgba(14, 27, 18, 0.92) 80%,
+    #0e1b12 100%
+  );
+}
+
+.product-card {
+  background: linear-gradient(
+    180deg,
+    rgba(26, 39, 29, 1) 0%,
+    rgba(14, 27, 18, 1) 100%
+  );
+  border: 1px solid rgba(201, 162, 39, 0.12);
+}
