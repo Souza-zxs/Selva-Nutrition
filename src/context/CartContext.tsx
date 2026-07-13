@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { Product } from "../data/content";
+import type { Product } from "../types/product";
 
 export type CartLine = {
   product: Product;
@@ -21,6 +21,7 @@ type CartContextValue = {
   addItem: (product: Product, qty?: number) => void;
   removeItem: (productId: string) => void;
   setQty: (productId: string, qty: number) => void;
+  clear: () => void;
   itemCount: number;
   subtotal: number;
 };
@@ -71,6 +72,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   }
 
+  function clear() {
+    setLines([]);
+  }
+
   const itemCount = useMemo(
     () => lines.reduce((sum, l) => sum + l.qty, 0),
     [lines],
@@ -90,6 +95,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         addItem,
         removeItem,
         setQty,
+        clear,
         itemCount,
         subtotal,
       }}

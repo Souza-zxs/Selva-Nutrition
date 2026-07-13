@@ -102,6 +102,12 @@ const PATHS: Record<string, React.ReactNode> = {
   spa: (
     <path d="M12 21c-4.5-1-7-4.6-7-9.4C5 7 7.4 4 12 3c4.6 1 7 4 7 8.6 0 4.8-2.5 8.4-7 9.4Zm0 0V9M12 9c0-3-1.6-5-4-6M12 9c0-3 1.6-5 4-6" />
   ),
+  person: (
+    <>
+      <circle cx="12" cy="8.2" r="3.4" />
+      <path d="M4.8 20c.9-4 3.6-6 7.2-6s6.3 2 7.2 6" />
+    </>
+  ),
   history_edu: (
     <>
       <path d="M6 4.5h9.5L19 8v11.5H6V4.5Z" />

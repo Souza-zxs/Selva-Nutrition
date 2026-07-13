@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import { navLinks } from "../data/content";
+import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { useStickyNavbar } from "../hooks/useStickyNavbar";
 import Icon from "./Icon";
@@ -6,6 +8,7 @@ import Icon from "./Icon";
 export default function Navbar() {
   const scrolled = useStickyNavbar();
   const { itemCount, open } = useCart();
+  const { user, signOut } = useAuth();
 
   return (
     <nav
@@ -31,6 +34,24 @@ export default function Navbar() {
           ))}
         </div>
         <div className="flex items-center gap-6">
+          {user ? (
+            <button
+              aria-label="Sair da conta"
+              onClick={() => signOut()}
+              className="scale-95 text-on-surface-variant transition-all hover:text-secondary active:scale-90"
+              title={user.email ?? undefined}
+            >
+              <Icon name="person" />
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              aria-label="Entrar"
+              className="scale-95 text-on-surface-variant transition-all hover:text-secondary active:scale-90"
+            >
+              <Icon name="person" />
+            </Link>
+          )}
           <button
             aria-label={`Carrinho${itemCount > 0 ? ` (${itemCount} ${itemCount === 1 ? "item" : "itens"})` : ""}`}
             onClick={open}

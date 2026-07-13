@@ -368,6 +368,10 @@ deno_version = 2
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
+[functions.mercadopago-webhook]
+# Mercado Pago's servers call this directly — they don't have a Supabase JWT.
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327

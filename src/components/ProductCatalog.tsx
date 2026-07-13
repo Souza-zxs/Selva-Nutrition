@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { products, type Product } from "../data/content";
 import { useCart } from "../context/CartContext";
+import { useProducts } from "../hooks/useProducts";
 import { formatBRL } from "../lib/currency";
+import type { Product } from "../types/product";
 import Icon from "./Icon";
 import Reveal from "./motion/Reveal";
 
 export default function ProductCatalog() {
+  const { products, loading, error } = useProducts();
+
   return (
     <section
       id="colecao"
@@ -22,15 +25,30 @@ export default function ProductCatalog() {
             </h2>
           </div>
         </Reveal>
+        {error && (
+          <p className="mb-8 text-center text-sm text-error">
+            Não foi possível carregar o catálogo agora. Tente novamente em
+            instantes.
+          </p>
+        )}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {products.map((product, index) => (
-            <ProductCard
-              key={product.name}
-              product={product}
-              delay={index * 100}
-            />
-          ))}
-          <NewsletterCard delay={products.length * 100} />
+          {loading
+            ? Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="aspect-square animate-pulse bg-surface-container-lowest"
+                />
+              ))
+            : products.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  delay={index * 100}
+                />
+              ))}
+          {!loading && (
+            <NewsletterCard delay={products.length * 100} />
+          )}
         </div>
       </div>
     </section>

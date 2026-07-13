@@ -1,12 +1,11 @@
-import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { formatBRL } from "../lib/currency";
 import Icon from "./Icon";
 
 export default function CartDrawer() {
   const { lines, isOpen, close, removeItem, setQty, subtotal } = useCart();
-  const [checkoutRequested, setCheckoutRequested] = useState(false);
 
   return (
     <AnimatePresence>
@@ -118,19 +117,18 @@ export default function CartDrawer() {
                 <span className="uppercase">Subtotal</span>
                 <span className="text-secondary">{formatBRL(subtotal)}</span>
               </div>
-              {checkoutRequested ? (
-                <p className="text-center text-label-caps text-secondary uppercase">
-                  Checkout em breve — pagamento chegando na próxima fase.
-                </p>
-              ) : (
-                <button
-                  disabled={lines.length === 0}
-                  className="w-full bg-secondary py-4 text-label-caps text-primary-container uppercase transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100"
-                  onClick={() => setCheckoutRequested(true)}
-                >
-                  Finalizar Compra
-                </button>
-              )}
+              <Link
+                to="/checkout"
+                onClick={close}
+                aria-disabled={lines.length === 0}
+                className={`block w-full bg-secondary py-4 text-center text-label-caps text-primary-container uppercase transition-all hover:brightness-110 ${
+                  lines.length === 0
+                    ? "pointer-events-none opacity-40"
+                    : ""
+                }`}
+              >
+                Finalizar Compra
+              </Link>
             </div>
           </motion.aside>
         </>
