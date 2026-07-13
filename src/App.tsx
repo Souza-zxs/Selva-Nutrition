@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import CartDrawer from "./components/CartDrawer";
@@ -7,23 +7,42 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminProductForm from "./pages/admin/AdminProductForm";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminOrderDetail from "./pages/admin/AdminOrderDetail";
 import { useLenis } from "./hooks/useLenis";
 
 function App() {
   useLenis();
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/admin");
 
   return (
     <div className="antialiased">
-      <Navbar />
+      {!isAdmin && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Signup />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/pedido/:id" element={<OrderConfirmation />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminProducts />} />
+          <Route path="produtos" element={<AdminProducts />} />
+          <Route path="produtos/novo" element={<AdminProductForm />} />
+          <Route path="produtos/:id" element={<AdminProductForm />} />
+          <Route path="pedidos" element={<AdminOrders />} />
+          <Route path="pedidos/:id" element={<AdminOrderDetail />} />
+        </Route>
       </Routes>
-      <Footer />
-      <CartDrawer />
+      {!isAdmin && (
+        <>
+          <Footer />
+          <CartDrawer />
+        </>
+      )}
     </div>
   );
 }

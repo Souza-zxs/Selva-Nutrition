@@ -116,6 +116,43 @@ const PATHS: Record<string, React.ReactNode> = {
       <path d="M9 15.5c1.8-1.4 3.6-1.4 6 0" />
     </>
   ),
+  inventory: (
+    <>
+      <path d="M4 8.5 12 4l8 4.5V17L12 21.5 4 17V8.5Z" />
+      <path d="M4 8.5 12 13l8-4.5" />
+      <path d="M12 13v8.5" />
+    </>
+  ),
+  receipt: (
+    <>
+      <path d="M6 3.5h12v17l-2.2-1.5-2 1.5-1.8-1.5-2 1.5-1.8-1.5-2 1.5v-17Z" />
+      <path d="M9 8h6M9 11.5h6M9 15h4" />
+    </>
+  ),
+  logout: (
+    <>
+      <path d="M13 4H6.5a1.5 1.5 0 0 0-1.5 1.5v13A1.5 1.5 0 0 0 6.5 20H13" />
+      <path d="M10 12h10.5M17 8.5 21 12l-4 3.5" />
+    </>
+  ),
+  search: (
+    <>
+      <circle cx="10.5" cy="10.5" r="6.5" />
+      <path d="M19.5 19.5 15.2 15.2" />
+    </>
+  ),
+  upload: (
+    <>
+      <path d="M12 15.5V4M8 8l4-4 4 4" />
+      <path d="M4.5 15.5v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3" />
+    </>
+  ),
+  arrow_back: (
+    <>
+      <path d="M19 12H5" />
+      <path d="M11 6l-6 6 6 6" />
+    </>
+  ),
 };
 
 export default function Icon({ name, className = "" }: IconProps) {
