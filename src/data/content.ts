@@ -32,32 +32,6 @@ export const manifesto = {
   ],
 };
 
-export const comparison = {
-  title: "A Verdade Inconveniente",
-  quote: '"Nem tudo que reluz... é Ouro."',
-  image: "/products/selva-jar-signature.svg",
-  enemy: {
-    title: "O Inimigo",
-    icon: "dangerous",
-    items: [
-      { label: "Óleos Vegetais de Sementes", value: "Inflamação Crônica" },
-      { label: "Açúcar & Carboidratos Refinados", value: "Pico de Insulina" },
-      { label: "Ultraprocessados", value: "Vazio Nutricional" },
-      { label: "Alumínio & Parabenos", value: "Dano Hormonal" },
-    ],
-  },
-  solution: {
-    title: "A Solução SELVA",
-    icon: "shield_heart",
-    items: [
-      { label: "Gordura Animal Pura", value: "Estabilidade & Saúde" },
-      { label: "Ingredientes Sem Aditivos", value: "Pureza Absoluta" },
-      { label: "Cosméticos de Base Comestível", value: "Biocompatibilidade" },
-      { label: "Desodorante Sem Alumínio", value: "Saúde Hormonal" },
-    ],
-  },
-};
-
 export const trustBadges = [
   {
     title: "Aprovado pelo seu Avô",

@@ -1,22 +1,13 @@
-import { useRef } from "react";
 import { manifesto } from "../data/content";
-import BotanicalMotif from "./BotanicalMotif";
 import Icon from "./Icon";
 import Reveal from "./motion/Reveal";
 
 export default function Manifesto() {
-  const sectionRef = useRef<HTMLElement>(null);
-
   return (
     <section
-      ref={sectionRef}
       id="manifesto"
-      className="relative overflow-hidden bg-surface-container-lowest px-margin-mobile py-32 md:px-margin-desktop"
+      className="bg-surface-container-lowest px-margin-mobile py-32 md:px-margin-desktop"
     >
-      <BotanicalMotif
-        containerRef={sectionRef}
-        className="pointer-events-none absolute -top-24 -left-24 hidden h-[140%] w-auto opacity-[0.07] lg:block"
-      />
       <div className="relative mx-auto grid max-w-container-max items-center gap-16 md:grid-cols-2">
         <Reveal>
           <span className="mb-4 block text-label-caps tracking-widest text-secondary uppercase">
