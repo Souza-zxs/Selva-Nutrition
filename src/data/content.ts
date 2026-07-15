@@ -16,11 +16,13 @@ export const hero = {
 export const manifesto = {
   eyebrow: "O MANIFESTO",
   title: "Autonomia Biológica em um mundo industrial.",
-  body: "A indústria moderna falhou. Fomos convencidos de que óleos vegetais e açúcares refinados são o combustível da vida. Na SELVA, resgatamos a sabedoria ancestral para destravar a performance humana superior.",
+  body: "A indústria moderna falhou. Fomos convencidos de que óleos vegetais e açúcares refinados são o combustível da vida, enquanto inflamação crônica, brain fog e cansaço viraram normalidade. Na SELVA, resgatamos a sabedoria ancestral para destravar a performance humana superior.",
+  bodySecondary:
+    "Não seguimos diretrizes nutricionais obsoletas, não confiamos em quem lucra tratando sintomas em vez de curar, e não aceitamos comida de mentira desenhada para viciar. Existe uma geração cética à indústria alimentícia e farmacêutica — que busca clareza mental, força física e controle total sobre a própria biologia. A SELVA existe para essa geração.",
   image: "/products/manifesto-tallow-trio.webp",
   points: [
     {
-      icon: "verified",
+      icon: "cattle",
       title: "Sabedoria Ancestral",
       body: "Gorduras saturadas nobres e densidade nutricional que sustentou impérios.",
     },
@@ -28,6 +30,11 @@ export const manifesto = {
       icon: "bolt",
       title: "Performance Moderna",
       body: "Biohacking através da natureza. Sem atalhos químicos, apenas biologia pura.",
+    },
+    {
+      icon: "verified",
+      title: "Pureza Absoluta",
+      body: "Zero óleos de sementes, zero conservantes, zero mentira no rótulo. Se não é comida de verdade, não leva o nome Selva.",
     },
   ],
 };
@@ -55,6 +62,7 @@ export const ecosystem = {
   subtitle:
     "Mais do que suplementação. Um compromisso com a excelência biológica.",
   source: {
+    icon: "mountain",
     title: "A Fonte Original",
     body: "Conheça os biomas de onde extraímos cada componente da nossa fórmula.",
     cta: "Explorar Origem",

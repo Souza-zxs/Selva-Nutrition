@@ -15,7 +15,7 @@ export default function Footer() {
   return (
     <footer
       id="journal"
-      className="border-t border-outline-variant/20 bg-surface-container-lowest"
+      className="texture-kraft border-t border-outline-variant/20 bg-surface-container-lowest"
     >
       <div className="mx-auto flex w-full max-w-container-max flex-col items-start justify-between gap-12 px-margin-mobile py-16 md:flex-row md:items-center md:px-margin-desktop">
         <div className="max-w-sm">

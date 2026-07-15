@@ -6,6 +6,8 @@ import { discountPercent } from "../lib/pricing";
 import type { Product } from "../types/product";
 import Icon from "./Icon";
 import Reveal from "./motion/Reveal";
+import Button from "./ui/Button";
+import Input from "./ui/Input";
 
 export default function ProductCatalog() {
   const { products, loading, error } = useProducts();
@@ -47,10 +49,8 @@ export default function ProductCatalog() {
                   delay={index * 100}
                 />
               ))}
-          {!loading && (
-            <NewsletterCard delay={products.length * 100} />
-          )}
         </div>
+        {!loading && <NewsletterBand delay={products.length * 100} />}
       </div>
     </section>
   );
@@ -119,17 +119,14 @@ function ProductCard({
           {formatBRL(product.price)}
         </span>
       )}
-      <button
-        onClick={handleAdd}
-        className="w-full bg-secondary py-4 text-label-caps text-primary-container uppercase transition-all hover:brightness-110"
-      >
+      <Button onClick={handleAdd} className="w-full py-4">
         {justAdded ? "Adicionado!" : "Comprar"}
-      </button>
+      </Button>
     </Reveal>
   );
 }
 
-function NewsletterCard({ delay }: { delay: number }) {
+function NewsletterBand({ delay }: { delay: number }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
@@ -141,14 +138,16 @@ function NewsletterCard({ delay }: { delay: number }) {
 
   return (
     <Reveal
-      className="flex flex-col items-center justify-center bg-primary-container p-8 text-center"
       delay={delay}
+      className="mt-20 flex flex-col items-center border-t border-outline-variant/15 pt-16 text-center"
     >
-      <Icon name="history_edu" className="mb-6 text-6xl text-secondary" />
-      <h3 className="font-serif mb-4 text-headline-lg text-on-surface uppercase">
+      <span className="mb-3 block text-label-caps tracking-widest text-secondary uppercase">
+        Fique por dentro
+      </span>
+      <h3 className="font-serif mb-3 text-xl text-on-surface uppercase md:text-2xl">
         Faça parte da Elite
       </h3>
-      <p className="mb-8 text-sm text-on-surface-variant">
+      <p className="mb-6 max-w-md text-sm text-on-surface-variant">
         Receba protocolos semanais de biohacking e ofertas exclusivas direto
         na sua inbox.
       </p>
@@ -157,21 +156,18 @@ function NewsletterCard({ delay }: { delay: number }) {
           Obrigado! Verifique seu e-mail.
         </p>
       ) : (
-        <form className="flex w-full gap-2" onSubmit={handleSubmit}>
-          <input
-            className="carved-well flex-grow border-none bg-surface-dim px-4 py-3 text-label-caps focus:ring-1 focus:ring-secondary/50"
+        <form className="flex w-full max-w-sm gap-2" onSubmit={handleSubmit}>
+          <Input
+            className="flex-grow"
             placeholder="Email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <button
-            type="submit"
-            className="bg-secondary px-6 text-label-caps text-primary-container uppercase"
-          >
+          <Button type="submit" className="px-6">
             OK
-          </button>
+          </Button>
         </form>
       )}
     </Reveal>

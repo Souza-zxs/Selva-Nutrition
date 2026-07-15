@@ -6,7 +6,7 @@ export default function Manifesto() {
   return (
     <section
       id="manifesto"
-      className="bg-surface-container-lowest px-margin-mobile py-32 md:px-margin-desktop"
+      className="texture-kraft bg-surface-container-lowest px-margin-mobile py-32 md:px-margin-desktop"
     >
       <div className="relative mx-auto grid max-w-container-max items-center gap-16 md:grid-cols-2">
         <Reveal>
@@ -16,8 +16,11 @@ export default function Manifesto() {
           <h2 className="font-serif mb-6 text-headline-lg-mobile leading-tight text-on-surface uppercase md:text-headline-lg">
             {manifesto.title}
           </h2>
-          <p className="mb-8 text-body-lg text-on-surface-variant">
+          <p className="mb-5 text-body-lg text-on-surface-variant">
             {manifesto.body}
+          </p>
+          <p className="mb-8 text-sm text-on-surface-variant/80">
+            {manifesto.bodySecondary}
           </p>
           <div className="space-y-6">
             {manifesto.points.map((point) => (

@@ -4,6 +4,7 @@ import { formatBRL } from "../../lib/currency";
 import { supabase } from "../../lib/supabase";
 import Icon from "../../components/Icon";
 import { OrderStatusBadge } from "../../components/admin/StatusBadge";
+import Button from "../../components/ui/Button";
 
 type OrderItem = {
   qty: number;
@@ -182,13 +183,13 @@ export default function AdminOrderDetail() {
                 </option>
               ))}
             </select>
-            <button
+            <Button
               onClick={handleSave}
               disabled={saving || status === order.status}
-              className="bg-secondary px-6 py-3 text-label-caps text-primary-container uppercase transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+              className="px-6 py-3"
             >
               {saving ? "Salvando..." : "Salvar"}
-            </button>
+            </Button>
             {saved && (
               <span className="text-xs text-secondary">Atualizado ✓</span>
             )}

@@ -1,7 +1,9 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { hero } from "../data/content";
+import { handleAnchorNav } from "../hooks/useLenis";
 import Icon from "./Icon";
+import { buttonClass } from "./ui/Button";
 
 const container: Variants = {
   hidden: {},
@@ -69,13 +71,15 @@ export default function Hero() {
         >
           <a
             href="#colecao"
-            className="bg-secondary px-10 py-4 text-center text-label-caps text-primary-container uppercase transition-all hover:shadow-[0_0_25px_rgba(201,162,39,0.35)]"
+            onClick={(e) => handleAnchorNav(e, "#colecao")}
+            className={buttonClass("filled", "px-10 py-4 text-center")}
           >
             {hero.primaryCta}
           </a>
           <a
             href="#manifesto"
-            className="metallic-border px-10 py-4 text-center text-label-caps text-secondary uppercase transition-all hover:bg-secondary/10"
+            onClick={(e) => handleAnchorNav(e, "#manifesto")}
+            className={buttonClass("outline", "px-10 py-4 text-center")}
           >
             {hero.secondaryCta}
           </a>

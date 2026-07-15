@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext";
 import { formatBRL } from "../lib/currency";
 import { effectivePrice } from "../lib/pricing";
 import Icon from "./Icon";
+import { buttonClass } from "./ui/Button";
 
 export default function CartDrawer() {
   const { lines, isOpen, close, removeItem, setQty, subtotal } = useCart();
@@ -122,11 +123,12 @@ export default function CartDrawer() {
                 to="/checkout"
                 onClick={close}
                 aria-disabled={lines.length === 0}
-                className={`block w-full bg-secondary py-4 text-center text-label-caps text-primary-container uppercase transition-all hover:brightness-110 ${
-                  lines.length === 0
-                    ? "pointer-events-none opacity-40"
-                    : ""
-                }`}
+                className={buttonClass(
+                  "filled",
+                  `block w-full py-4 text-center ${
+                    lines.length === 0 ? "pointer-events-none opacity-40" : ""
+                  }`,
+                )}
               >
                 Finalizar Compra
               </Link>

@@ -25,6 +25,10 @@ export default function Ecosystem() {
               alt="Paisagem selvagem"
             />
             <div className="absolute inset-0 flex flex-col justify-end p-12">
+              <Icon
+                name={ecosystem.source.icon}
+                className="mb-4 text-4xl text-secondary"
+              />
               <h3 className="font-serif mb-4 text-headline-lg text-on-surface uppercase">
                 {ecosystem.source.title}
               </h3>

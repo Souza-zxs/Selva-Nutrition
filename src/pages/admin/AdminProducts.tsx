@@ -5,6 +5,7 @@ import { formatBRL } from "../../lib/currency";
 import type { Product } from "../../types/product";
 import Icon from "../../components/Icon";
 import { OfferBadge, StockBadge } from "../../components/admin/StatusBadge";
+import { buttonClass } from "../../components/ui/Button";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -57,7 +58,7 @@ export default function AdminProducts() {
         </div>
         <Link
           to="/admin/produtos/novo"
-          className="flex items-center justify-center gap-2 bg-secondary px-6 py-3 text-label-caps text-primary-container uppercase transition-all hover:brightness-110"
+          className={buttonClass("filled", "flex items-center justify-center gap-2 px-6 py-3")}
         >
           + Novo produto
         </Link>
@@ -191,7 +192,7 @@ function EmptyState({ hasQuery }: { hasQuery: boolean }) {
           </p>
           <Link
             to="/admin/produtos/novo"
-            className="bg-secondary px-6 py-3 text-label-caps text-primary-container uppercase hover:brightness-110"
+            className={buttonClass("filled", "px-6 py-3")}
           >
             Cadastrar o primeiro
           </Link>

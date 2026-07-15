@@ -6,6 +6,8 @@ import { useCart } from "../context/CartContext";
 import { formatBRL } from "../lib/currency";
 import { effectivePrice } from "../lib/pricing";
 import { supabase } from "../lib/supabase";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
 
 type ShippingQuote = {
   id: string;
@@ -13,9 +15,6 @@ type ShippingQuote = {
   price: number;
   etaDays: number;
 };
-
-const inputClass =
-  "carved-well border-none bg-surface-dim px-4 py-3 text-label-caps focus:ring-1 focus:ring-secondary/50";
 
 async function resolveErrorMessage(
   data: { error?: string } | null,
@@ -170,24 +169,21 @@ export default function Checkout() {
             Endereço &amp; Contato
           </h1>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            <input
-              className={inputClass}
+            <Input
               placeholder="Nome completo"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
             />
             <div className="grid gap-4 md:grid-cols-2">
-              <input
-                className={inputClass}
+              <Input
                 placeholder="Email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <input
-                className={inputClass}
+              <Input
                 placeholder="Telefone"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -195,37 +191,32 @@ export default function Checkout() {
               />
             </div>
             <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
-              <input
-                className={inputClass}
+              <Input
                 placeholder="Rua"
                 value={street}
                 onChange={(e) => setStreet(e.target.value)}
                 required
               />
-              <input
-                className={inputClass}
+              <Input
                 placeholder="Número"
                 value={number}
                 onChange={(e) => setNumber(e.target.value)}
                 required
               />
             </div>
-            <input
-              className={inputClass}
+            <Input
               placeholder="Complemento (opcional)"
               value={complement}
               onChange={(e) => setComplement(e.target.value)}
             />
             <div className="grid gap-4 md:grid-cols-2">
-              <input
-                className={inputClass}
+              <Input
                 placeholder="Bairro"
                 value={neighborhood}
                 onChange={(e) => setNeighborhood(e.target.value)}
                 required
               />
-              <input
-                className={inputClass}
+              <Input
                 placeholder="CEP"
                 value={zip}
                 onChange={(e) => setZip(e.target.value)}
@@ -233,15 +224,13 @@ export default function Checkout() {
               />
             </div>
             <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
-              <input
-                className={inputClass}
+              <Input
                 placeholder="Cidade"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 required
               />
-              <input
-                className={inputClass}
+              <Input
                 placeholder="UF"
                 maxLength={2}
                 value={state}
@@ -250,13 +239,13 @@ export default function Checkout() {
               />
             </div>
             {error && <p className="text-sm text-error">{error}</p>}
-            <button
+            <Button
               type="submit"
               disabled={submitting || calculatingShipping || !selectedShipping}
-              className="mt-2 bg-secondary py-4 text-label-caps text-primary-container uppercase transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-2 py-4"
             >
               {submitting ? "Processando..." : "Ir para o pagamento"}
-            </button>
+            </Button>
           </form>
         </div>
 

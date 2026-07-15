@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
 
 export default function Signup() {
   const { signUp } = useAuth();
@@ -50,8 +52,7 @@ export default function Signup() {
           Criar conta
         </h1>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <input
-            className="carved-well border-none bg-surface-dim px-4 py-3 text-label-caps focus:ring-1 focus:ring-secondary/50"
+          <Input
             placeholder="Nome completo"
             type="text"
             autoComplete="name"
@@ -59,8 +60,7 @@ export default function Signup() {
             onChange={(e) => setFullName(e.target.value)}
             required
           />
-          <input
-            className="carved-well border-none bg-surface-dim px-4 py-3 text-label-caps focus:ring-1 focus:ring-secondary/50"
+          <Input
             placeholder="Email"
             type="email"
             autoComplete="email"
@@ -68,8 +68,7 @@ export default function Signup() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <input
-            className="carved-well border-none bg-surface-dim px-4 py-3 text-label-caps focus:ring-1 focus:ring-secondary/50"
+          <Input
             placeholder="Senha"
             type="password"
             autoComplete="new-password"
@@ -79,13 +78,9 @@ export default function Signup() {
             required
           />
           {error && <p className="text-sm text-error">{error}</p>}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mt-2 bg-secondary py-4 text-label-caps text-primary-container uppercase transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <Button type="submit" disabled={submitting} className="mt-2 py-4">
             {submitting ? "Criando..." : "Criar conta"}
-          </button>
+          </Button>
         </form>
         <p className="mt-8 text-center text-sm text-on-surface-variant">
           Já tem conta?{" "}

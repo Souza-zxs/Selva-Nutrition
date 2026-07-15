@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
 
 export default function Login() {
   const { signIn } = useAuth();
@@ -33,8 +35,7 @@ export default function Login() {
           Entrar
         </h1>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <input
-            className="carved-well border-none bg-surface-dim px-4 py-3 text-label-caps focus:ring-1 focus:ring-secondary/50"
+          <Input
             placeholder="Email"
             type="email"
             autoComplete="email"
@@ -42,8 +43,7 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <input
-            className="carved-well border-none bg-surface-dim px-4 py-3 text-label-caps focus:ring-1 focus:ring-secondary/50"
+          <Input
             placeholder="Senha"
             type="password"
             autoComplete="current-password"
@@ -52,13 +52,9 @@ export default function Login() {
             required
           />
           {error && <p className="text-sm text-error">{error}</p>}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mt-2 bg-secondary py-4 text-label-caps text-primary-container uppercase transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <Button type="submit" disabled={submitting} className="mt-2 py-4">
             {submitting ? "Entrando..." : "Entrar"}
-          </button>
+          </Button>
         </form>
         <p className="mt-8 text-center text-sm text-on-surface-variant">
           Ainda não tem conta?{" "}

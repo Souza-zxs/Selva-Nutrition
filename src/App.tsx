@@ -21,6 +21,7 @@ function App() {
 
   return (
     <div className="antialiased">
+      {!isAdmin && <div className="grain-overlay" />}
       {!isAdmin && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />

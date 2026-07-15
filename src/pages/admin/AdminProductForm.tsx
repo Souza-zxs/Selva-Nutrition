@@ -10,6 +10,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { slugify } from "../../lib/slugify";
 import Icon from "../../components/Icon";
+import Button from "../../components/ui/Button";
 
 const inputClass =
   "carved-well w-full border-none bg-surface-dim px-4 py-3 text-sm text-on-surface focus:ring-1 focus:ring-secondary/50";
@@ -378,13 +379,13 @@ export default function AdminProductForm() {
 
           {error && <p className="text-sm text-error">{error}</p>}
 
-          <button
+          <Button
             type="submit"
             disabled={saving || uploading}
-            className="mt-2 w-fit bg-secondary px-8 py-4 text-label-caps text-primary-container uppercase transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-2 w-fit px-8 py-4"
           >
             {saving ? "Salvando..." : "Salvar produto"}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

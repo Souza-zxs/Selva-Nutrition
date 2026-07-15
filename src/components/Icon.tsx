@@ -153,6 +153,35 @@ const PATHS: Record<string, React.ReactNode> = {
       <path d="M11 6l-6 6 6 6" />
     </>
   ),
+  cattle: (
+    <>
+      <path d="M8.3 9.2c-1-1.3-.9-3 .3-4.2" />
+      <path d="M15.7 9.2c1-1.3.9-3-.3-4.2" />
+      <path d="M7 13.8c0-3 2.2-5.3 5-5.3s5 2.3 5 5.3c0 2.8-2 4.6-5 5.3-3-.7-5-2.5-5-5.3Z" />
+      <circle cx="10" cy="13.4" r="0.55" fill="currentColor" stroke="none" />
+      <circle cx="14" cy="13.4" r="0.55" fill="currentColor" stroke="none" />
+      <path d="M10.3 16.6c1.1.7 2.3.7 3.4 0" />
+    </>
+  ),
+  leaf: (
+    <>
+      <path d="M6 18.5C5.6 10.7 9.8 4.8 18 3.5c1 7.8-3.4 13.6-12 15Z" />
+      <path d="M7 17.3C9.7 12.6 12.9 8.7 17 5.3" />
+    </>
+  ),
+  mountain: (
+    <>
+      <path d="M2.5 18.5 8.7 7.8l3.4 5.3 2.4-3 6.5 8.4H2.5Z" />
+      <path d="M8.7 7.8l2 3.2-1.7 2.7" />
+    </>
+  ),
+  menu: (
+    <>
+      <path d="M4 6.5h16" />
+      <path d="M4 12h16" />
+      <path d="M4 17.5h16" />
+    </>
+  ),
 };
 
 export default function Icon({ name, className = "" }: IconProps) {

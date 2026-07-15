@@ -43,6 +43,11 @@ export default function BotanicalMotif({
       const hairs = svg.querySelector<SVGGElement>("[data-hairs]");
       if (hairs) gsap.set(hairs, { opacity: 0 });
 
+      const tip = svg.querySelector<SVGCircleElement>("[data-tip]");
+      const mainPath = drawPaths[0];
+      const mainLength = mainPath?.getTotalLength() ?? 0;
+      if (tip) gsap.set(tip, { opacity: 0 });
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger,
@@ -57,9 +62,32 @@ export default function BotanicalMotif({
       drawPaths.forEach((path) => {
         const start = Number(path.dataset.start);
         const end = Number(path.dataset.end);
+        const isMain = path === mainPath;
         tl.to(
           path,
-          { strokeDashoffset: 0, duration: end - start, ease: "power1.in" },
+          {
+            strokeDashoffset: 0,
+            duration: end - start,
+            ease: "power1.in",
+            onUpdate: isMain
+              ? () => {
+                  if (!tip) return;
+                  const offset = Number(
+                    gsap.getProperty(mainPath, "strokeDashoffset"),
+                  );
+                  const drawn = mainLength - offset;
+                  if (drawn <= 0 || drawn >= mainLength - 1) {
+                    gsap.set(tip, { opacity: 0 });
+                    return;
+                  }
+                  const point = mainPath.getPointAtLength(drawn);
+                  gsap.set(tip, {
+                    opacity: 1,
+                    attr: { cx: point.x, cy: point.y },
+                  });
+                }
+              : undefined,
+          },
           start,
         );
       });
@@ -79,11 +107,30 @@ export default function BotanicalMotif({
       preserveAspectRatio="none"
       className={className}
       fill="none"
-      stroke="var(--color-secondary)"
+      stroke="url(#rootGradient)"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
+      <defs>
+        <linearGradient id="rootGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#e9c176" />
+          <stop offset="45%" stopColor="var(--color-secondary)" />
+          <stop offset="100%" stopColor="#8a6a1a" />
+        </linearGradient>
+        <filter id="rootGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="7" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="tipGlow" x="-300%" y="-300%" width="700%" height="700%">
+          <feGaussianBlur stdDeviation="5" />
+        </filter>
+      </defs>
+
+      <g filter="url(#rootGlow)">
       {/* taproot — zigzags edge to edge down the full page */}
       <path
         data-draw
@@ -185,23 +232,39 @@ export default function BotanicalMotif({
         strokeWidth={1.1}
       />
 
-      {/* fine root hairs near every branch tip and the final root tip */}
+      {/* fine root hairs near every branch tip — soft curved tendrils rather than rigid ticks */}
       <g data-hairs strokeWidth={0.8}>
-        <path d="M800 830 l16 10 M800 830 l-4 20 M800 830 l20 -4" />
-        <path d="M650 460 l-14 -10 M650 460 l16 -10 M650 460 l4 -20" />
-        <path d="M920 880 l16 8 M920 880 l4 20" />
-        <path d="M340 1340 l16 8 M340 1340 l4 20" />
-        <path d="M100 1500 l-14 10 M100 1500 l16 8" />
-        <path d="M380 1250 l16 -8 M380 1250 l4 -20" />
-        <path d="M930 2130 l16 8 M930 2130 l4 20" />
-        <path d="M690 1840 l-16 -8 M690 1840 l-4 -20" />
-        <path d="M970 2180 l16 8 M970 2180 l4 18" />
-        <path d="M350 2720 l16 8 M350 2720 l4 20" />
-        <path d="M110 2880 l-14 10 M110 2880 l16 8" />
-        <path d="M400 2640 l16 -8 M400 2640 l4 -20" />
-        <path d="M520 3400 l-10 16 M520 3400 l14 12 M520 3400 l-4 20 M520 3400 l18 8" />
-        <circle cx="520" cy="3400" r="3.5" fill="var(--color-secondary)" stroke="none" />
+        <path d="M800 830 q10 3 16 10 M800 830 q-7 8 -4 20 M800 830 q13 -9 20 -4" />
+        <path d="M650 460 q-9 -4 -14 -10 M650 460 q11 -13 16 -10 M650 460 q6 -14 4 -20" />
+        <path d="M920 880 q10 2 16 8 M920 880 q6 12 4 20" />
+        <path d="M340 1340 q10 2 16 8 M340 1340 q6 12 4 20" />
+        <path d="M100 1500 q-9 3 -14 10 M100 1500 q11 1 16 8" />
+        <path d="M380 1250 q10 -2 16 -8 M380 1250 q6 -12 4 -20" />
+        <path d="M930 2130 q10 2 16 8 M930 2130 q6 12 4 20" />
+        <path d="M690 1840 q-10 -2 -16 -8 M690 1840 q-6 -12 -4 -20" />
+        <path d="M970 2180 q10 2 16 8 M970 2180 q6 10 4 18" />
+        <path d="M350 2720 q10 2 16 8 M350 2720 q6 12 4 20" />
+        <path d="M110 2880 q-9 3 -14 10 M110 2880 q11 1 16 8" />
+        <path d="M400 2640 q10 -2 16 -8 M400 2640 q6 -12 4 -20" />
+        <path d="M520 3400 q-7 9 -10 16 M520 3400 q9 5 14 12 M520 3400 q-2 12 -4 20 M520 3400 q11 2 18 8" />
       </g>
+      </g>
+
+      <circle
+        cx="520"
+        cy="3400"
+        r="4"
+        fill="var(--color-secondary)"
+        stroke="none"
+        filter="url(#rootGlow)"
+      />
+      <circle
+        data-tip
+        r="6"
+        fill="var(--color-secondary)"
+        stroke="none"
+        filter="url(#tipGlow)"
+      />
     </svg>
   );
 }
