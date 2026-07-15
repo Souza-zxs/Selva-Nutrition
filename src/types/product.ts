@@ -11,4 +11,7 @@ export type Product = {
   specs?: string[] | null;
   stock: number;
   active: boolean;
+  weight_kg: number;
+  is_featured: boolean;
+  sale_price: number | null;
 };

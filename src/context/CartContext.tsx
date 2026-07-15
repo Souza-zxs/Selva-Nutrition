@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import type { Product } from "../types/product";
+import { effectivePrice } from "../lib/pricing";
 
 export type CartLine = {
   product: Product;
@@ -24,6 +25,7 @@ type CartContextValue = {
   clear: () => void;
   itemCount: number;
   subtotal: number;
+  totalWeightKg: number;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -81,7 +83,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [lines],
   );
   const subtotal = useMemo(
-    () => lines.reduce((sum, l) => sum + l.qty * l.product.price, 0),
+    () => lines.reduce((sum, l) => sum + l.qty * effectivePrice(l.product), 0),
+    [lines],
+  );
+  const totalWeightKg = useMemo(
+    () => lines.reduce((sum, l) => sum + l.qty * l.product.weight_kg, 0),
     [lines],
   );
 
@@ -98,6 +104,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clear,
         itemCount,
         subtotal,
+        totalWeightKg,
       }}
     >
       {children}

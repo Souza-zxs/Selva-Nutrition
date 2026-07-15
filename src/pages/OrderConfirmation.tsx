@@ -13,6 +13,8 @@ type Order = {
   id: string;
   status: string;
   subtotal: number;
+  shipping_cost: number;
+  shipping_service: string | null;
   created_at: string;
   order_items: OrderItem[];
 };
@@ -39,7 +41,7 @@ export default function OrderConfirmation() {
       const { data, error } = await supabase
         .from("orders")
         .select(
-          "id, status, subtotal, created_at, order_items(qty, unit_price, products(name))",
+          "id, status, subtotal, shipping_cost, shipping_service, created_at, order_items(qty, unit_price, products(name))",
         )
         .eq("id", id)
         .single();
@@ -86,10 +88,24 @@ export default function OrderConfirmation() {
                 </li>
               ))}
             </ul>
+            <div className="mb-3 flex justify-between text-sm text-on-surface-variant">
+              <span className="uppercase">Subtotal</span>
+              <span>{formatBRL(order.subtotal)}</span>
+            </div>
+            <div className="mb-6 flex justify-between text-sm text-on-surface-variant">
+              <span className="uppercase">
+                Frete{order.shipping_service ? ` (${order.shipping_service})` : ""}
+              </span>
+              <span>
+                {order.shipping_cost === 0
+                  ? "Grátis"
+                  : formatBRL(order.shipping_cost)}
+              </span>
+            </div>
             <div className="mb-10 flex justify-between border-t border-outline-variant/20 pt-6 text-body-lg text-on-surface">
               <span className="uppercase">Total</span>
               <span className="text-secondary">
-                {formatBRL(order.subtotal)}
+                {formatBRL(order.subtotal + order.shipping_cost)}
               </span>
             </div>
           </>

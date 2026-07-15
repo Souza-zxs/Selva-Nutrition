@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
+import { calculateShipping } from "../_shared/shipping.ts";
 
 type CartLine = { product_id: string; qty: number };
 
@@ -9,17 +10,22 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { lines, shipping_address, contact } = (await req.json()) as {
-      lines: CartLine[];
-      shipping_address: Record<string, unknown>;
-      contact: Record<string, unknown>;
-    };
+    const { lines, shipping_address, shipping, contact } =
+      (await req.json()) as {
+        lines: CartLine[];
+        shipping_address: Record<string, unknown>;
+        shipping: { service_id: string };
+        contact: Record<string, unknown>;
+      };
 
     if (!Array.isArray(lines) || lines.length === 0) {
       return json({ error: "Carrinho vazio" }, 400);
     }
     if (!shipping_address || !contact) {
       return json({ error: "Endereço e contato são obrigatórios" }, 400);
+    }
+    if (!shipping?.service_id) {
+      return json({ error: "Selecione uma opção de frete" }, 400);
     }
 
     const supabaseAdmin = createClient(
@@ -39,7 +45,7 @@ Deno.serve(async (req) => {
     const productIds = lines.map((l) => l.product_id);
     const { data: products, error: productsError } = await supabaseAdmin
       .from("products")
-      .select("id, name, price, stock, active")
+      .select("id, name, price, sale_price, is_featured, weight_kg, stock, active")
       .in("id", productIds);
 
     if (productsError) return json({ error: productsError.message }, 500);
@@ -49,6 +55,7 @@ Deno.serve(async (req) => {
     // Price/stock always come from the DB row here, never from the client —
     // this is the one place that closes the "cart price tampered in localStorage" hole.
     let subtotal = 0;
+    let totalWeightKg = 0;
     const orderItems: {
       product_id: string;
       qty: number;
@@ -76,13 +83,40 @@ Deno.serve(async (req) => {
         );
       }
 
-      subtotal += product.price * qty;
+      const unitPrice =
+        product.is_featured && product.sale_price != null
+          ? product.sale_price
+          : product.price;
+
+      subtotal += unitPrice * qty;
+      totalWeightKg += product.weight_kg * qty;
       orderItems.push({
         product_id: product.id,
         qty,
-        unit_price: product.price,
+        unit_price: unitPrice,
         name: product.name,
       });
+    }
+
+    const zip = (shipping_address as { zip?: string }).zip ?? "";
+    let shippingCost: number;
+    let shippingServiceName: string;
+    try {
+      const quotes = calculateShipping(zip, totalWeightKg, subtotal);
+      const quote = quotes.find((q) => q.id === shipping.service_id);
+      if (!quote) {
+        return json(
+          { error: "Opção de frete inválida, recalcule o frete." },
+          400,
+        );
+      }
+      shippingCost = quote.price;
+      shippingServiceName = quote.name;
+    } catch (err) {
+      return json(
+        { error: err instanceof Error ? err.message : "CEP inválido" },
+        400,
+      );
     }
 
     const { data: order, error: orderError } = await supabaseAdmin
@@ -90,6 +124,8 @@ Deno.serve(async (req) => {
       .insert({
         user_id: userId,
         subtotal,
+        shipping_cost: shippingCost,
+        shipping_service: shippingServiceName,
         shipping_address,
         contact,
         status: "pending",
@@ -135,12 +171,24 @@ Deno.serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          items: orderItems.map((item) => ({
-            title: item.name,
-            quantity: item.qty,
-            unit_price: item.unit_price,
-            currency_id: "BRL",
-          })),
+          items: [
+            ...orderItems.map((item) => ({
+              title: item.name,
+              quantity: item.qty,
+              unit_price: item.unit_price,
+              currency_id: "BRL",
+            })),
+            ...(shippingCost > 0
+              ? [
+                  {
+                    title: `Frete - ${shippingServiceName}`,
+                    quantity: 1,
+                    unit_price: shippingCost,
+                    currency_id: "BRL",
+                  },
+                ]
+              : []),
+          ],
           external_reference: order.id,
           back_urls: {
             success: `${siteUrl}/pedido/${order.id}`,

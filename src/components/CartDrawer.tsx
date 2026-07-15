@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { formatBRL } from "../lib/currency";
+import { effectivePrice } from "../lib/pricing";
 import Icon from "./Icon";
 
 export default function CartDrawer() {
@@ -71,7 +72,7 @@ export default function CartDrawer() {
                           {line.product.name}
                         </span>
                         <span className="mt-1 text-label-caps text-secondary">
-                          {formatBRL(line.product.price)}
+                          {formatBRL(effectivePrice(line.product))}
                         </span>
                         <div className="mt-auto flex items-center gap-3">
                           <div className="carved-well flex items-center gap-3 bg-surface-dim px-3 py-1">

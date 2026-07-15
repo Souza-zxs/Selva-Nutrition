@@ -15,6 +15,8 @@ type Order = {
   id: string;
   status: string;
   subtotal: number;
+  shipping_cost: number;
+  shipping_service: string | null;
   created_at: string;
   shipping_address: Record<string, string>;
   contact: { name?: string; email?: string; phone?: string };
@@ -43,7 +45,7 @@ export default function AdminOrderDetail() {
     supabase
       .from("orders")
       .select(
-        "id, status, subtotal, created_at, shipping_address, contact, order_items(qty, unit_price, products(name, image))",
+        "id, status, subtotal, shipping_cost, shipping_service, created_at, shipping_address, contact, order_items(qty, unit_price, products(name, image))",
       )
       .eq("id", id)
       .single()
@@ -122,9 +124,25 @@ export default function AdminOrderDetail() {
               </li>
             ))}
           </ul>
+          <div className="flex justify-between pt-4 text-sm text-on-surface-variant">
+            <span className="uppercase">Subtotal</span>
+            <span>{formatBRL(order.subtotal)}</span>
+          </div>
+          <div className="mb-4 flex justify-between text-sm text-on-surface-variant">
+            <span className="uppercase">
+              Frete{order.shipping_service ? ` (${order.shipping_service})` : ""}
+            </span>
+            <span>
+              {order.shipping_cost === 0
+                ? "Grátis"
+                : formatBRL(order.shipping_cost)}
+            </span>
+          </div>
           <div className="flex justify-between border-t border-outline-variant/15 pt-4 text-body-lg text-on-surface">
             <span className="uppercase">Total</span>
-            <span className="text-secondary">{formatBRL(order.subtotal)}</span>
+            <span className="text-secondary">
+              {formatBRL(order.subtotal + order.shipping_cost)}
+            </span>
           </div>
 
           <h3 className="font-serif mt-8 mb-3 text-lg text-on-surface uppercase">

@@ -35,6 +35,14 @@ export function OrderStatusBadge({ status }: { status: string }) {
   );
 }
 
+export function OfferBadge() {
+  return (
+    <span className="inline-block rounded-full border border-secondary bg-secondary/10 px-3 py-1 text-[11px] tracking-wide text-secondary uppercase">
+      Oferta
+    </span>
+  );
+}
+
 export function StockBadge({ stock }: { stock: number }) {
   if (stock <= 0) {
     return (

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useProducts } from "../hooks/useProducts";
 import { formatBRL } from "../lib/currency";
+import { discountPercent } from "../lib/pricing";
 import type { Product } from "../types/product";
 import Icon from "./Icon";
 import Reveal from "./motion/Reveal";
@@ -65,6 +66,9 @@ function ProductCard({
   const { addItem } = useCart();
   const [justAdded, setJustAdded] = useState(false);
 
+  const isOnSale = product.is_featured && product.sale_price != null;
+  const discount = discountPercent(product);
+
   function handleAdd() {
     addItem(product);
     setJustAdded(true);
@@ -73,7 +77,12 @@ function ProductCard({
 
   return (
     <Reveal className="product-card flex flex-col p-8" delay={delay}>
-      <div className="metallic-border group mb-8 flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-6">
+      <div className="metallic-border group relative mb-8 flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-6">
+        {isOnSale && (
+          <span className="absolute top-3 left-3 z-10 bg-error px-3 py-1 text-[10px] font-semibold tracking-widest text-on-surface uppercase">
+            Oferta{discount ? ` -${discount}%` : ""}
+          </span>
+        )}
         {product.image ? (
           <img
             alt={product.name}
@@ -96,9 +105,20 @@ function ProductCard({
       <p className="mb-4 flex-grow text-sm text-on-surface-variant">
         {product.body}
       </p>
-      <span className="mb-6 block text-body-lg text-on-surface">
-        {formatBRL(product.price)}
-      </span>
+      {isOnSale ? (
+        <span className="mb-6 flex items-baseline gap-3">
+          <span className="text-sm text-on-surface-variant line-through">
+            {formatBRL(product.price)}
+          </span>
+          <span className="text-body-lg text-secondary">
+            {formatBRL(product.sale_price!)}
+          </span>
+        </span>
+      ) : (
+        <span className="mb-6 block text-body-lg text-on-surface">
+          {formatBRL(product.price)}
+        </span>
+      )}
       <button
         onClick={handleAdd}
         className="w-full bg-secondary py-4 text-label-caps text-primary-container uppercase transition-all hover:brightness-110"

@@ -31,6 +31,9 @@ export default function AdminProductForm() {
   const [image, setImage] = useState("");
   const [stock, setStock] = useState("0");
   const [active, setActive] = useState(true);
+  const [weightKg, setWeightKg] = useState("0.3");
+  const [isFeatured, setIsFeatured] = useState(false);
+  const [salePrice, setSalePrice] = useState("");
 
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
@@ -56,6 +59,9 @@ export default function AdminProductForm() {
           setImage(data.image ?? "");
           setStock(String(data.stock));
           setActive(data.active);
+          setWeightKg(String(data.weight_kg));
+          setIsFeatured(data.is_featured);
+          setSalePrice(data.sale_price != null ? String(data.sale_price) : "");
         }
         setLoading(false);
       });
@@ -99,8 +105,20 @@ export default function AdminProductForm() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setSaving(true);
     setError(null);
+
+    if (isFeatured) {
+      if (!salePrice) {
+        setError("Informe o preço promocional para marcar o produto em oferta.");
+        return;
+      }
+      if (Number(salePrice) >= Number(price)) {
+        setError("O preço promocional precisa ser menor que o preço normal.");
+        return;
+      }
+    }
+
+    setSaving(true);
 
     const payload = {
       slug,
@@ -111,6 +129,9 @@ export default function AdminProductForm() {
       image: image || null,
       stock: Number(stock),
       active,
+      weight_kg: Number(weightKg),
+      is_featured: isFeatured,
+      sale_price: isFeatured ? Number(salePrice) : null,
     };
 
     const { error } = isNew
@@ -280,6 +301,61 @@ export default function AdminProductForm() {
                 required
               />
             </div>
+          </div>
+
+          <div>
+            <label className={labelClass} htmlFor="weight">
+              Peso (kg) — usado para calcular o frete
+            </label>
+            <input
+              id="weight"
+              className={inputClass}
+              type="number"
+              step="0.01"
+              min="0.01"
+              value={weightKg}
+              onChange={(e) => setWeightKg(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="carved-well bg-surface-dim p-5">
+            <label className="flex w-fit cursor-pointer items-center gap-3">
+              <span className={labelClass + " mb-0"}>Em oferta / promoção</span>
+              <span
+                onClick={() => setIsFeatured((f) => !f)}
+                className={`relative h-6 w-11 rounded-full transition-colors ${
+                  isFeatured ? "bg-secondary" : "bg-surface-container-lowest"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 h-5 w-5 rounded-full bg-on-surface transition-transform ${
+                    isFeatured ? "translate-x-5" : "translate-x-0.5"
+                  }`}
+                />
+              </span>
+            </label>
+            {isFeatured && (
+              <div className="mt-4">
+                <label className={labelClass} htmlFor="salePrice">
+                  Preço promocional (R$)
+                </label>
+                <input
+                  id="salePrice"
+                  className={inputClass}
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={salePrice}
+                  onChange={(e) => setSalePrice(e.target.value)}
+                  required
+                />
+                <p className="mt-2 text-xs text-on-surface-variant">
+                  O produto ganha um selo de oferta no catálogo, com o preço
+                  original riscado e este preço em destaque.
+                </p>
+              </div>
+            )}
           </div>
 
           <label className="flex w-fit cursor-pointer items-center gap-3">

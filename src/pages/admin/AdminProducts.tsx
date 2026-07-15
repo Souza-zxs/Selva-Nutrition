@@ -4,7 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { formatBRL } from "../../lib/currency";
 import type { Product } from "../../types/product";
 import Icon from "../../components/Icon";
-import { StockBadge } from "../../components/admin/StatusBadge";
+import { OfferBadge, StockBadge } from "../../components/admin/StatusBadge";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -102,9 +102,23 @@ export default function AdminProducts() {
                       )}
                     </div>
                   </td>
-                  <td className="py-3 pr-4">{product.name}</td>
+                  <td className="py-3 pr-4">
+                    <div className="flex items-center gap-2">
+                      {product.name}
+                      {product.is_featured && <OfferBadge />}
+                    </div>
+                  </td>
                   <td className="py-3 pr-4 text-secondary">
-                    {formatBRL(product.price)}
+                    {product.is_featured && product.sale_price != null ? (
+                      <>
+                        <span className="mr-2 text-xs text-on-surface-variant line-through">
+                          {formatBRL(product.price)}
+                        </span>
+                        {formatBRL(product.sale_price)}
+                      </>
+                    ) : (
+                      formatBRL(product.price)
+                    )}
                   </td>
                   <td className="py-3 pr-4">
                     <StockBadge stock={product.stock} />
