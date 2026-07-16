@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { footerLinks } from "../data/content";
 import Icon from "./Icon";
 
@@ -19,9 +20,13 @@ export default function Footer() {
     >
       <div className="mx-auto flex w-full max-w-container-max flex-col items-start justify-between gap-12 px-margin-mobile py-16 md:flex-row md:items-center md:px-margin-desktop">
         <div className="max-w-sm">
-          <div className="mb-6 text-headline-lg font-extrabold text-secondary uppercase">
-            SELVA
-          </div>
+          <Link to="/" aria-label="Selva Nutrition — início" className="mb-6 inline-block">
+            <img
+              src="/logo-selva-touro.png"
+              alt="Selva Nutrition"
+              className="h-24 w-auto object-contain"
+            />
+          </Link>
           <p className="text-body-md text-on-surface-variant italic">
             "Primitive Strength, Refined Performance."
           </p>

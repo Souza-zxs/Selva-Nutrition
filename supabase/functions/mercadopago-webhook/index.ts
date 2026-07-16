@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
+import { sendOrderConfirmationEmail } from "../_shared/email.ts";
 
 const STATUS_MAP: Record<string, string> = {
   approved: "paid",
@@ -63,7 +64,7 @@ Deno.serve(async (req) => {
 
     const { data: order } = await supabaseAdmin
       .from("orders")
-      .select("id, status")
+      .select("id, status, contact, subtotal, shipping_cost, shipping_service")
       .eq("id", orderId)
       .single();
 
@@ -76,11 +77,11 @@ Deno.serve(async (req) => {
       .update({ status: newStatus, mp_payment_id: String(payment.id) })
       .eq("id", orderId);
 
-    // Decrement stock exactly once, only on the pending -> paid transition.
+    // Decrement stock and send confirmation email exactly once, only on the pending -> paid transition.
     if (newStatus === "paid" && order.status !== "paid") {
       const { data: items } = await supabaseAdmin
         .from("order_items")
-        .select("product_id, qty")
+        .select("product_id, qty, unit_price, products(name)")
         .eq("order_id", orderId);
 
       for (const item of items ?? []) {
@@ -88,6 +89,28 @@ Deno.serve(async (req) => {
           p_product_id: item.product_id,
           p_qty: item.qty,
         });
+      }
+
+      const contact = order.contact as { name?: string; email?: string } | null;
+      if (contact?.email) {
+        try {
+          await sendOrderConfirmationEmail({
+            to: contact.email,
+            customerName: contact.name ?? "cliente",
+            orderId: order.id,
+            items: (items ?? []).map((item) => ({
+              name: (item.products as { name?: string } | null)?.name ?? "Produto",
+              qty: item.qty,
+              unitPrice: item.unit_price,
+            })),
+            subtotal: order.subtotal,
+            shippingCost: order.shipping_cost,
+            shippingServiceName: order.shipping_service,
+            siteUrl: Deno.env.get("SITE_URL") ?? "http://localhost:5173",
+          });
+        } catch (err) {
+          console.error("Erro ao enviar e-mail de confirmação", err);
+        }
       }
     }
 

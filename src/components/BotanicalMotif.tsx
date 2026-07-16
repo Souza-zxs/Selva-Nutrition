@@ -20,6 +20,17 @@ type BotanicalMotifProps = {
  * Driven by a GSAP ScrollTrigger-scrubbed timeline (stroke-dasharray, not
  * native CSS scroll-timeline — Safari still lacks support for that), so the
  * root tracks the scrollbar directly while it "grows downward" while reading.
+ *
+ * Each root-hair cluster reveals itself at its own branch's finish time
+ * (via data-reveal), rather than every hair on the page popping in together
+ * at the very end — that reads as the root actually growing past each point.
+ *
+ * On top of the scroll-scrubbed growth, four free-running loops give the
+ * motif a pulse of its own rather than a static decal: the growing tip
+ * breathes, each hair cluster blooms in with a little spring overshoot
+ * (via svgOrigin, anchored at data-origin), a slow shimmer drifts through
+ * the shared gold gradient, and the whole root sways almost imperceptibly
+ * like it's rooted in a light breeze.
  */
 export default function BotanicalMotif({
   className = "",
@@ -40,13 +51,47 @@ export default function BotanicalMotif({
         gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
       });
 
-      const hairs = svg.querySelector<SVGGElement>("[data-hairs]");
-      if (hairs) gsap.set(hairs, { opacity: 0 });
+      const hairGroups = svg.querySelectorAll<SVGGElement>("[data-hairs]");
+      hairGroups.forEach((g) => {
+        const [ox, oy] = (g.dataset.origin ?? "0 0").split(" ").map(Number);
+        gsap.set(g, { opacity: 0, scale: 0.55, svgOrigin: `${ox} ${oy}` });
+      });
 
       const tip = svg.querySelector<SVGCircleElement>("[data-tip]");
       const mainPath = drawPaths[0];
       const mainLength = mainPath?.getTotalLength() ?? 0;
       if (tip) gsap.set(tip, { opacity: 0 });
+
+      // Free-running loops — independent of scroll, they give the motif a pulse of its own.
+      if (tip) {
+        gsap.to(tip, {
+          attr: { r: 8.5 },
+          duration: 1.1,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        });
+      }
+
+      const gradient = svg.querySelector<SVGLinearGradientElement>("#rootGradient");
+      if (gradient) {
+        gsap.to(gradient, {
+          attr: { y1: "-0.3", y2: "0.7" },
+          duration: 7,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        });
+      }
+
+      gsap.to(svg, {
+        rotation: 0.6,
+        transformOrigin: "50% 0%",
+        duration: 9,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -92,9 +137,14 @@ export default function BotanicalMotif({
         );
       });
 
-      if (hairs) {
-        tl.to(hairs, { opacity: 1, duration: 0.18, ease: "power1.in" }, 0.82);
-      }
+      hairGroups.forEach((g) => {
+        const reveal = Number(g.dataset.reveal);
+        tl.to(
+          g,
+          { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.4)" },
+          reveal,
+        );
+      });
     }, svg);
 
     return () => ctx.revert();
@@ -162,6 +212,30 @@ export default function BotanicalMotif({
         d="M870 760C910 790 940 830 920 880"
         strokeWidth={1.1}
       />
+      {/* tertiary fork off cluster A's first branch — a root branching off a root */}
+      <path
+        data-draw
+        data-start="0.2"
+        data-end="0.3"
+        d="M874 736C912 754 934 786 918 822"
+        strokeWidth={0.85}
+      />
+
+      {/* filler cluster E — fills the long quiet stretch between swing 1 and 2 */}
+      <path
+        data-draw
+        data-start="0.23"
+        data-end="0.35"
+        d="M591 913C648 946 676 994 638 1044"
+        strokeWidth={1.3}
+      />
+      <path
+        data-draw
+        data-start="0.23"
+        data-end="0.35"
+        d="M591 913C542 880 504 850 472 802"
+        strokeWidth={1.1}
+      />
 
       {/* cluster B — second swing (left) */}
       <path
@@ -185,6 +259,14 @@ export default function BotanicalMotif({
         d="M260 1355C300 1330 340 1300 380 1250"
         strokeWidth={1.1}
       />
+      {/* tertiary fork off cluster B's first branch */}
+      <path
+        data-draw
+        data-start="0.38"
+        data-end="0.48"
+        d="M246 1340C280 1362 300 1396 276 1424"
+        strokeWidth={0.85}
+      />
 
       {/* cluster C — third swing (right) */}
       <path
@@ -206,6 +288,30 @@ export default function BotanicalMotif({
         data-start="0.6"
         data-end="0.72"
         d="M955 2050C990 2080 1000 2130 970 2180"
+        strokeWidth={1.1}
+      />
+      {/* tertiary fork off cluster C's first branch */}
+      <path
+        data-draw
+        data-start="0.58"
+        data-end="0.68"
+        d="M941 2044C978 2062 1000 2096 978 2130"
+        strokeWidth={0.85}
+      />
+
+      {/* filler cluster F — fills the quiet stretch between swing 3 and 4 */}
+      <path
+        data-draw
+        data-start="0.56"
+        data-end="0.68"
+        d="M590 2289C647 2322 675 2370 637 2420"
+        strokeWidth={1.3}
+      />
+      <path
+        data-draw
+        data-start="0.56"
+        data-end="0.68"
+        d="M590 2289C541 2256 503 2226 471 2178"
         strokeWidth={1.1}
       />
 
@@ -231,21 +337,58 @@ export default function BotanicalMotif({
         d="M285 2740C330 2720 370 2690 400 2640"
         strokeWidth={1.1}
       />
+      {/* tertiary fork off cluster D's first branch */}
+      <path
+        data-draw
+        data-start="0.72"
+        data-end="0.82"
+        d="M266 2726C300 2748 322 2782 298 2810"
+        strokeWidth={0.85}
+      />
 
-      {/* fine root hairs near every branch tip — soft curved tendrils rather than rigid ticks */}
-      <g data-hairs strokeWidth={0.8}>
+      {/* fine root hairs + gold buds, each cluster's group reveals itself right as
+          that cluster finishes drawing — not all at once at the very end. */}
+      <g data-hairs data-reveal="0.34" data-origin="820 760" strokeWidth={0.8}>
         <path d="M800 830 q10 3 16 10 M800 830 q-7 8 -4 20 M800 830 q13 -9 20 -4" />
         <path d="M650 460 q-9 -4 -14 -10 M650 460 q11 -13 16 -10 M650 460 q6 -14 4 -20" />
         <path d="M920 880 q10 2 16 8 M920 880 q6 12 4 20" />
+        <path d="M918 822 q8 4 12 10 M918 822 q-6 8 -2 16" />
+        <circle cx="918" cy="822" r="2" fill="var(--color-secondary)" stroke="none" />
+      </g>
+
+      <g data-hairs data-reveal="0.35" data-origin="555 923" strokeWidth={0.8}>
+        <path d="M638 1044 q10 3 14 10 M638 1044 q-6 9 -2 18" />
+        <path d="M472 802 q-9 -3 -14 -8 M472 802 q10 -10 15 -6" />
+      </g>
+
+      <g data-hairs data-reveal="0.54" data-origin="275 1380" strokeWidth={0.8}>
         <path d="M340 1340 q10 2 16 8 M340 1340 q6 12 4 20" />
         <path d="M100 1500 q-9 3 -14 10 M100 1500 q11 1 16 8" />
         <path d="M380 1250 q10 -2 16 -8 M380 1250 q6 -12 4 -20" />
+        <path d="M276 1424 q9 2 14 9 M276 1424 q-4 10 2 18" />
+      </g>
+
+      <g data-hairs data-reveal="0.72" data-origin="890 2070" strokeWidth={0.8}>
         <path d="M930 2130 q10 2 16 8 M930 2130 q6 12 4 20" />
         <path d="M690 1840 q-10 -2 -16 -8 M690 1840 q-6 -12 -4 -20" />
         <path d="M970 2180 q10 2 16 8 M970 2180 q6 10 4 18" />
+        <path d="M978 2130 q9 3 13 10 M978 2130 q-5 9 0 17" />
+        <circle cx="978" cy="2130" r="2" fill="var(--color-secondary)" stroke="none" />
+      </g>
+
+      <g data-hairs data-reveal="0.68" data-origin="555 2300" strokeWidth={0.8}>
+        <path d="M637 2420 q10 3 14 10 M637 2420 q-6 9 -2 18" />
+        <path d="M471 2178 q-9 -3 -14 -8 M471 2178 q10 -10 15 -6" />
+      </g>
+
+      <g data-hairs data-reveal="0.84" data-origin="290 2760" strokeWidth={0.8}>
         <path d="M350 2720 q10 2 16 8 M350 2720 q6 12 4 20" />
         <path d="M110 2880 q-9 3 -14 10 M110 2880 q11 1 16 8" />
         <path d="M400 2640 q10 -2 16 -8 M400 2640 q6 -12 4 -20" />
+        <path d="M298 2810 q9 3 13 10 M298 2810 q-5 9 -1 17" />
+      </g>
+
+      <g data-hairs data-reveal="0.82" data-origin="520 3400" strokeWidth={0.8}>
         <path d="M520 3400 q-7 9 -10 16 M520 3400 q9 5 14 12 M520 3400 q-2 12 -4 20 M520 3400 q11 2 18 8" />
       </g>
       </g>

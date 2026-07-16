@@ -24,9 +24,13 @@ export default function Navbar() {
       }`}
     >
       <div className="mx-auto flex w-full max-w-container-max items-center justify-between px-margin-mobile md:px-margin-desktop">
-        <div className="flex items-center gap-4 text-[24px] font-extrabold tracking-tighter text-secondary uppercase md:text-headline-lg">
-          SELVA
-        </div>
+        <Link to="/" aria-label="Selva Nutrition — início" className="flex items-center">
+          <img
+            src="/logo-selva-touro.png"
+            alt="Selva Nutrition"
+            className="h-16 w-auto object-contain transition-transform duration-300 hover:scale-105 md:h-24"
+          />
+        </Link>
         <div className="hidden items-center gap-gutter md:flex">
           {navLinks.map((link) => (
             <a
@@ -44,7 +48,7 @@ export default function Navbar() {
             <button
               aria-label="Sair da conta"
               onClick={() => signOut()}
-              className="scale-95 text-on-surface-variant transition-all hover:text-secondary active:scale-90"
+              className="scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
               title={user.email ?? undefined}
             >
               <Icon name="person" />
@@ -53,7 +57,7 @@ export default function Navbar() {
             <Link
               to="/login"
               aria-label="Entrar"
-              className="scale-95 text-on-surface-variant transition-all hover:text-secondary active:scale-90"
+              className="scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
             >
               <Icon name="person" />
             </Link>
@@ -61,11 +65,11 @@ export default function Navbar() {
           <button
             aria-label={`Carrinho${itemCount > 0 ? ` (${itemCount} ${itemCount === 1 ? "item" : "itens"})` : ""}`}
             onClick={open}
-            className="relative scale-95 text-on-surface-variant transition-all hover:text-secondary active:scale-90"
+            className="relative scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
           >
             <Icon name="shopping_bag" />
             {itemCount > 0 && (
-              <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-primary-container">
+              <span className="absolute -top-2.5 -right-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-[11px] font-bold text-primary-container">
                 {itemCount}
               </span>
             )}
@@ -81,9 +85,9 @@ export default function Navbar() {
             aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
-            className="scale-95 text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:hidden"
+            className="scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:hidden"
           >
-            <Icon name={menuOpen ? "close" : "menu"} className="text-2xl" />
+            <Icon name={menuOpen ? "close" : "menu"} />
           </button>
         </div>
       </div>
