@@ -90,6 +90,19 @@ const PATHS: Record<string, React.ReactNode> = {
       <path d="M12 3.8c2.2 2.2 3.4 5 3.4 8.2s-1.2 6-3.4 8.2c-2.2-2.2-3.4-5-3.4-8.2s1.2-6 3.4-8.2Z" />
     </>
   ),
+  instagram: (
+    <>
+      <rect x="4" y="4" width="16" height="16" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="16.2" cy="7.8" r="0.6" fill="currentColor" stroke="none" />
+    </>
+  ),
+  mail: (
+    <>
+      <path d="M4.5 6.5h15v11h-15v-11Z" />
+      <path d="M4.5 7l7.5 6 7.5-6" />
+    </>
+  ),
   podcasts: (
     <>
       <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" />

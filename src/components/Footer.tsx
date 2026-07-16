@@ -32,18 +32,20 @@ export default function Footer() {
           </p>
           <div className="mt-8 flex gap-4">
             <a
-              href="#"
-              aria-label="Website"
+              href="https://www.instagram.com/selvanutritionoficial/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
               className="metallic-border flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-secondary hover:text-primary-container"
             >
-              <Icon name="public" className="text-xl" />
+              <Icon name="instagram" className="text-xl" />
             </a>
             <a
-              href="#"
-              aria-label="Podcast"
+              href="mailto:contatoselvanutrition@gmail.com"
+              aria-label="Email"
               className="metallic-border flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-secondary hover:text-primary-container"
             >
-              <Icon name="podcasts" className="text-xl" />
+              <Icon name="mail" className="text-xl" />
             </a>
           </div>
         </div>
