@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
 import { calculateShipping } from "../_shared/shipping.ts";
+import { sendOrderReceivedEmail } from "../_shared/email.ts";
 
 type CartLine = { product_id: string; qty: number };
 
@@ -148,6 +149,42 @@ Deno.serve(async (req) => {
 
     if (itemsError) return json({ error: itemsError.message }, 500);
 
+    const siteUrl = Deno.env.get("SITE_URL") ?? "http://localhost:5173";
+
+    // Best-effort: "pedido recebido" email + closing out any abandoned-cart
+    // draft for this email. Neither should ever fail the checkout itself.
+    const contactInfo = contact as { name?: string; email?: string };
+    if (contactInfo.email) {
+      try {
+        await sendOrderReceivedEmail({
+          to: contactInfo.email,
+          customerName: contactInfo.name ?? "cliente",
+          orderId: order.id,
+          items: orderItems.map((item) => ({
+            name: item.name,
+            qty: item.qty,
+            unitPrice: item.unit_price,
+          })),
+          subtotal,
+          shippingCost,
+          shippingServiceName,
+          siteUrl,
+        });
+      } catch (err) {
+        console.error("Erro ao enviar e-mail de pedido recebido", err);
+      }
+
+      try {
+        await supabaseAdmin
+          .from("abandoned_carts")
+          .update({ recovered: true })
+          .eq("email", contactInfo.email.trim().toLowerCase())
+          .eq("recovered", false);
+      } catch (err) {
+        console.error("Erro ao marcar carrinho abandonado como recuperado", err);
+      }
+    }
+
     const mpAccessToken = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN");
     if (!mpAccessToken) {
       // Order is safely persisted as "pending" — payment provider just isn't wired up yet.
@@ -161,7 +198,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    const siteUrl = Deno.env.get("SITE_URL") ?? "http://localhost:5173";
     const mpRes = await fetch(
       "https://api.mercadopago.com/checkout/preferences",
       {

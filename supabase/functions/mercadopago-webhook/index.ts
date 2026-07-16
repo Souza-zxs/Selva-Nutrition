@@ -1,6 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
-import { sendOrderConfirmationEmail } from "../_shared/email.ts";
+import { sendOrderPaidEmail } from "../_shared/email.ts";
 
 const STATUS_MAP: Record<string, string> = {
   approved: "paid",
@@ -94,7 +94,7 @@ Deno.serve(async (req) => {
       const contact = order.contact as { name?: string; email?: string } | null;
       if (contact?.email) {
         try {
-          await sendOrderConfirmationEmail({
+          await sendOrderPaidEmail({
             to: contact.email,
             customerName: contact.name ?? "cliente",
             orderId: order.id,

@@ -16,6 +16,10 @@ type ShippingQuote = {
   etaDays: number;
 };
 
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
 async function resolveErrorMessage(
   data: { error?: string } | null,
   invokeError: unknown,
@@ -108,6 +112,22 @@ export default function Checkout() {
     return <Navigate to="/" replace />;
   }
 
+  // Silent draft save when the customer types their email but hasn't
+  // finished checking out yet — powers the abandoned-cart recovery email.
+  // Fire-and-forget: it must never affect the checkout flow itself.
+  function captureAbandonedCart() {
+    if (!isValidEmail(email) || lines.length === 0) return;
+    supabase.functions
+      .invoke("save-abandoned-cart", {
+        body: {
+          email,
+          name: name || undefined,
+          lines: lines.map((l) => ({ product_id: l.product.id, qty: l.qty })),
+        },
+      })
+      .catch(() => {});
+  }
+
   const selectedShipping =
     shippingQuotes?.find((q) => q.id === selectedShippingId) ?? null;
   const total = subtotal + (selectedShipping?.price ?? 0);
@@ -181,6 +201,7 @@ export default function Checkout() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={captureAbandonedCart}
                 required
               />
               <Input

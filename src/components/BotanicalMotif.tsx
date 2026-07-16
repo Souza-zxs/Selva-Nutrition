@@ -60,37 +60,68 @@ export default function BotanicalMotif({
       const tip = svg.querySelector<SVGCircleElement>("[data-tip]");
       const mainPath = drawPaths[0];
       const mainLength = mainPath?.getTotalLength() ?? 0;
+      const mainEnd = Number(mainPath?.dataset.end ?? 0);
       if (tip) gsap.set(tip, { opacity: 0 });
 
+      // Static blurred twin of the taproot — glow lives here instead of on the
+      // scroll-scrubbed group. Its geometry never changes (no dash animation),
+      // so the feGaussianBlur filter only costs a repaint once, during the
+      // brief fade-in below, not on every scroll tick.
+      const mainGlow = svg.querySelector<SVGPathElement>("[data-main-glow]");
+      if (mainGlow) gsap.set(mainGlow, { opacity: 0 });
+
       // Free-running loops — independent of scroll, they give the motif a pulse of its own.
+      // Created paused and only played while the motif is actually in view (see
+      // ScrollTrigger below) so they don't burn CPU/GPU while scrolled past.
+      const loopTweens: gsap.core.Tween[] = [];
+
       if (tip) {
-        gsap.to(tip, {
-          attr: { r: 8.5 },
-          duration: 1.1,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-        });
+        loopTweens.push(
+          gsap.to(tip, {
+            attr: { r: 8.5 },
+            duration: 1.1,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            paused: true,
+          }),
+        );
       }
 
       const gradient = svg.querySelector<SVGLinearGradientElement>("#rootGradient");
       if (gradient) {
-        gsap.to(gradient, {
-          attr: { y1: "-0.3", y2: "0.7" },
-          duration: 7,
+        loopTweens.push(
+          gsap.to(gradient, {
+            attr: { y1: "-0.3", y2: "0.7" },
+            duration: 7,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            paused: true,
+          }),
+        );
+      }
+
+      loopTweens.push(
+        gsap.to(svg, {
+          rotation: 0.6,
+          transformOrigin: "50% 0%",
+          duration: 9,
           repeat: -1,
           yoyo: true,
           ease: "sine.inOut",
-        });
-      }
+          paused: true,
+        }),
+      );
 
-      gsap.to(svg, {
-        rotation: 0.6,
-        transformOrigin: "50% 0%",
-        duration: 9,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
+      ScrollTrigger.create({
+        trigger,
+        start: "top bottom",
+        end: "bottom top",
+        onEnter: () => loopTweens.forEach((t) => t.play()),
+        onEnterBack: () => loopTweens.forEach((t) => t.play()),
+        onLeave: () => loopTweens.forEach((t) => t.pause()),
+        onLeaveBack: () => loopTweens.forEach((t) => t.pause()),
       });
 
       const tl = gsap.timeline({
@@ -145,6 +176,14 @@ export default function BotanicalMotif({
           reveal,
         );
       });
+
+      if (mainGlow) {
+        tl.to(
+          mainGlow,
+          { opacity: 1, duration: 0.05, ease: "power1.out" },
+          Math.max(0, mainEnd - 0.05),
+        );
+      }
     }, svg);
 
     return () => ctx.revert();
@@ -180,7 +219,21 @@ export default function BotanicalMotif({
         </filter>
       </defs>
 
-      <g filter="url(#rootGlow)">
+      {/* Static glow twin of the taproot, faded in once the line finishes
+          drawing (see mainGlow tween above) — sits behind the crisp line
+          below, which is why it comes first in the DOM. */}
+      <path
+        data-main-glow
+        d="M150 0C400 150 750 350 850 620C950 850 300 950 130 1280C-40 1500 700 1650 870 1980C980 2200 250 2350 160 2680C90 2900 480 3150 520 3400"
+        strokeWidth={2.6}
+        filter="url(#rootGlow)"
+      />
+
+      {/* No filter on the group below on purpose: a feGaussianBlur across this
+          whole scroll-scrubbed group forced a full repaint of its entire
+          (huge) bounding box on every scroll tick. The static glow twin above
+          and the small tip/root glows keep the effect where it's cheap. */}
+      <g>
       {/* taproot — zigzags edge to edge down the full page */}
       <path
         data-draw

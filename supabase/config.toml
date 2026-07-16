@@ -372,6 +372,11 @@ deno_version = 2
 # Mercado Pago's servers call this directly — they don't have a Supabase JWT.
 verify_jwt = false
 
+[functions.send-cart-recovery-emails]
+# Called by pg_cron/pg_net on a schedule — no Supabase JWT either; protected
+# instead by the x-cron-secret header check inside the function itself.
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327
