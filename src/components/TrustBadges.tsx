@@ -13,7 +13,7 @@ export default function TrustBadges() {
             Compromisso com a Verdade
           </h2>
         </Reveal>
-        <Reveal className="grid grid-cols-1 items-center justify-items-center gap-12 md:grid-cols-3">
+        <Reveal className="grid grid-cols-1 items-center justify-items-center gap-12 sm:grid-cols-2 md:grid-cols-4">
           {trustBadges.map((badge) => (
             <div
               key={badge.title}

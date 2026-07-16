@@ -6,9 +6,9 @@ export const navLinks = [
 
 export const hero = {
   eyebrow: "SELVA NUTRITION",
-  title: "Biologia sem filtros.",
+  title: "DEIXE ESSA SUBPROMESSA.",
   subtitle:
-    "Recupere sua vitalidade ancestral com o poder da gordura animal pura. Nutrição Ancestral. Performance Moderna.",
+    "Transforme a subpromessa em promessa.",
   primaryCta: "Explorar Coleção",
   secondaryCta: "Nossa Origem",
 };
@@ -43,17 +43,22 @@ export const trustBadges = [
   {
     title: "Aprovado pelo seu Avô",
     body: "Desde sempre. Sem indústria.",
-    image: "/products/badge-heritage.svg",
+    image: "/products/badge-heritage.png",
   },
   {
     title: "Comida de Verdade",
     body: "Recomendado para humanos. Natural, Simples, Essencial.",
-    image: "/products/badge-real-food.svg",
+    image: "/products/badge-real-food.png",
   },
   {
     title: "Produto do Agro Brasileiro",
     body: "Origem, Qualidade, Tradição.",
-    image: "/products/badge-agro-brasil.svg",
+    image: "/products/badge-agro-brasil.png",
+  },
+  {
+    title: "Feito com Bois Veganos",
+    body: "Sem ração, sem hormônios, sem atalhos.",
+    image: "/products/badge-bois-veganos.png",
   },
 ];
 
