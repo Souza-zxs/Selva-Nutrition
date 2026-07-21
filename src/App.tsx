@@ -7,6 +7,10 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
+import MyOrders from "./pages/MyOrders";
+import TermsOfService from "./pages/legal/TermsOfService";
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import ReturnPolicy from "./pages/legal/ReturnPolicy";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminProductForm from "./pages/admin/AdminProductForm";
@@ -29,6 +33,10 @@ function App() {
         <Route path="/cadastro" element={<Signup />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/pedido/:id" element={<OrderConfirmation />} />
+        <Route path="/minha-conta" element={<MyOrders />} />
+        <Route path="/termos" element={<TermsOfService />} />
+        <Route path="/privacidade" element={<PrivacyPolicy />} />
+        <Route path="/trocas-e-devolucoes" element={<ReturnPolicy />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminProducts />} />
           <Route path="produtos" element={<AdminProducts />} />

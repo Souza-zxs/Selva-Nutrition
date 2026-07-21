@@ -126,6 +126,68 @@ export async function sendOrderPaidEmail(input: OrderEmailInput) {
 }
 
 // ---------------------------------------------------------------------------
+// Pedido enviado — disparado pelo admin-update-order quando o admin muda o
+// status para "shipped", opcionalmente com código de rastreio.
+// ---------------------------------------------------------------------------
+export type OrderShippedEmailInput = {
+  to: string;
+  customerName: string;
+  orderId: string;
+  trackingCode: string | null;
+  siteUrl: string;
+};
+
+export async function sendOrderShippedEmail(input: OrderShippedEmailInput) {
+  const orderShortId = input.orderId.slice(0, 8);
+  const html = emailWrapper(`
+    <p style="text-transform:uppercase;letter-spacing:2px;font-size:12px;color:#6b7a4f;">Pedido #${orderShortId}</p>
+    <h1 style="font-size:22px;margin:8px 0 16px;">Seu pedido foi enviado!</h1>
+    <p>Olá, ${escapeHtml(input.customerName)}. Seu pedido já está a caminho.</p>
+    ${
+      input.trackingCode
+        ? `<p style="margin:20px 0;padding:12px 16px;background:#f4f1e8;"><strong>Código de rastreio:</strong> ${escapeHtml(input.trackingCode)}</p>`
+        : ""
+    }
+    <p><a href="${input.siteUrl}/pedido/${input.orderId}" style="color:#6b7a4f;">Acompanhar pedido</a></p>
+  `);
+
+  await sendResendEmail(
+    input.to,
+    `Pedido #${orderShortId} enviado — Selva Nutrition`,
+    html,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Pedido cancelado/recusado — disparado pelo admin-update-order quando um
+// pedido que já estava pago é cancelado ou marcado como recusado depois do
+// fato (estorno, problema logístico etc.).
+// ---------------------------------------------------------------------------
+export type OrderCancelledEmailInput = {
+  to: string;
+  customerName: string;
+  orderId: string;
+  siteUrl: string;
+};
+
+export async function sendOrderCancelledEmail(input: OrderCancelledEmailInput) {
+  const orderShortId = input.orderId.slice(0, 8);
+  const html = emailWrapper(`
+    <p style="text-transform:uppercase;letter-spacing:2px;font-size:12px;color:#6b7a4f;">Pedido #${orderShortId}</p>
+    <h1 style="font-size:22px;margin:8px 0 16px;">Seu pedido foi cancelado</h1>
+    <p>Olá, ${escapeHtml(input.customerName)}. Seu pedido foi cancelado. Se você já havia pago, o estorno será processado pelo Mercado Pago conforme o meio de pagamento utilizado.</p>
+    <p>Qualquer dúvida, responda este e-mail que te ajudamos.</p>
+    <p><a href="${input.siteUrl}/pedido/${input.orderId}" style="color:#6b7a4f;">Ver pedido</a></p>
+  `);
+
+  await sendResendEmail(
+    input.to,
+    `Pedido #${orderShortId} cancelado — Selva Nutrition`,
+    html,
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Recuperação de carrinho — disparado pelo cron (send-cart-recovery-emails)
 // quando um carrinho fica parado sem virar pedido. Dois estágios: um lembrete
 // rápido e um último aviso bem mais tarde.
