@@ -12,7 +12,7 @@ import { buttonClass } from "./ui/Button";
 export default function Navbar() {
   const scrolled = useStickyNavbar();
   const { itemCount, open } = useCart();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -45,24 +45,14 @@ export default function Navbar() {
           ))}
         </div>
         <div className="flex items-center gap-6">
-          {user ? (
-            <button
-              aria-label="Sair da conta"
-              onClick={() => signOut()}
-              className="scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
-              title={user.email ?? undefined}
-            >
-              <Icon name="person" />
-            </button>
-          ) : (
-            <Link
-              to="/login"
-              aria-label="Entrar"
-              className="scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
-            >
-              <Icon name="person" />
-            </Link>
-          )}
+          <Link
+            to={user ? "/minha-conta" : "/login"}
+            aria-label={user ? "Minha conta" : "Entrar"}
+            className="scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
+            title={user?.email ?? undefined}
+          >
+            <Icon name="person" />
+          </Link>
           <button
             aria-label={`Carrinho${itemCount > 0 ? ` (${itemCount} ${itemCount === 1 ? "item" : "itens"})` : ""}`}
             onClick={open}

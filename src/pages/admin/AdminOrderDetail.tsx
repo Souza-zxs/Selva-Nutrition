@@ -1,3 +1,4 @@
+import { FunctionsHttpError } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { formatBRL } from "../../lib/currency";
@@ -5,6 +6,7 @@ import { supabase } from "../../lib/supabase";
 import Icon from "../../components/Icon";
 import { OrderStatusBadge } from "../../components/admin/StatusBadge";
 import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 
 type OrderItem = {
   qty: number;
@@ -18,11 +20,30 @@ type Order = {
   subtotal: number;
   shipping_cost: number;
   shipping_service: string | null;
+  tracking_code: string | null;
   created_at: string;
   shipping_address: Record<string, string>;
   contact: { name?: string; email?: string; phone?: string };
   order_items: OrderItem[];
 };
+
+async function resolveErrorMessage(
+  data: { error?: string } | null,
+  invokeError: unknown,
+): Promise<string> {
+  if (data?.error) return data.error;
+  if (invokeError instanceof FunctionsHttpError) {
+    try {
+      const body = await invokeError.context.json();
+      if (body?.error) return body.error as string;
+    } catch {
+      // fall through to the generic message below
+    }
+  }
+  return invokeError instanceof Error
+    ? invokeError.message
+    : "Erro inesperado ao atualizar o pedido.";
+}
 
 const STATUSES = ["pending", "paid", "failed", "cancelled", "shipped"];
 const STATUS_LABEL: Record<string, string> = {
@@ -37,16 +58,18 @@ export default function AdminOrderDetail() {
   const { id } = useParams<{ id: string }>();
   const [order, setOrder] = useState<Order | null>(null);
   const [status, setStatus] = useState("");
+  const [trackingCode, setTrackingCode] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
     supabase
       .from("orders")
       .select(
-        "id, status, subtotal, shipping_cost, shipping_service, created_at, shipping_address, contact, order_items(qty, unit_price, products(name, image))",
+        "id, status, subtotal, shipping_cost, shipping_service, tracking_code, created_at, shipping_address, contact, order_items(qty, unit_price, products(name, image))",
       )
       .eq("id", id)
       .single()
@@ -54,6 +77,7 @@ export default function AdminOrderDetail() {
         const o = data as unknown as Order;
         setOrder(o);
         setStatus(o?.status ?? "");
+        setTrackingCode(o?.tracking_code ?? "");
         setLoading(false);
       });
   }, [id]);
@@ -61,10 +85,20 @@ export default function AdminOrderDetail() {
   async function handleSave() {
     if (!id) return;
     setSaving(true);
-    await supabase.from("orders").update({ status }).eq("id", id);
+    setError(null);
+    const { data, error: invokeError } = await supabase.functions.invoke(
+      "admin-update-order",
+      { body: { orderId: id, status, tracking_code: trackingCode || null } },
+    );
     setSaving(false);
+
+    if (invokeError || data?.error) {
+      setError(await resolveErrorMessage(data, invokeError));
+      return;
+    }
+
     setSaved(true);
-    setOrder((o) => (o ? { ...o, status } : o));
+    setOrder((o) => (o ? { ...o, status, tracking_code: trackingCode || null } : o));
     setTimeout(() => setSaved(false), 2000);
   }
 
@@ -183,9 +217,19 @@ export default function AdminOrderDetail() {
                 </option>
               ))}
             </select>
+            <Input
+              placeholder="Código de rastreio (opcional)"
+              value={trackingCode}
+              onChange={(e) => setTrackingCode(e.target.value)}
+              className="min-w-[220px] flex-1"
+            />
             <Button
               onClick={handleSave}
-              disabled={saving || status === order.status}
+              disabled={
+                saving ||
+                (status === order.status &&
+                  trackingCode === (order.tracking_code ?? ""))
+              }
               className="px-6 py-3"
             >
               {saving ? "Salvando..." : "Salvar"}
@@ -194,6 +238,12 @@ export default function AdminOrderDetail() {
               <span className="text-xs text-secondary">Atualizado ✓</span>
             )}
           </div>
+          {error && <p className="mt-3 text-sm text-error">{error}</p>}
+          <p className="mt-4 text-xs text-on-surface-variant">
+            Mudar o status para "Enviado" envia um e-mail ao cliente com o
+            código de rastreio. Cancelar ou recusar um pedido já pago devolve
+            o estoque automaticamente e avisa o cliente por e-mail.
+          </p>
         </div>
       </div>
     </div>

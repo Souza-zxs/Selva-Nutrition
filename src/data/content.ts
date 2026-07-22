@@ -94,5 +94,9 @@ export const ecosystem = {
 
 export const footerLinks = {
   explore: ["A Marca", "Coleções", "Journal"],
-  legal: ["Privacy Policy", "Terms of Service", "Sustainability"],
+  legal: [
+    { label: "Política de Privacidade", to: "/privacidade" },
+    { label: "Termos de Uso", to: "/termos" },
+    { label: "Trocas e Devoluções", to: "/trocas-e-devolucoes" },
+  ],
 };

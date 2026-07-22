@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { footerLinks } from "../data/content";
+import { COMPANY, formatCompanyAddress, isCompanyInfoComplete } from "../data/company";
 import Icon from "./Icon";
 
 export default function Footer() {
@@ -69,13 +70,13 @@ export default function Footer() {
               Legal
             </span>
             {footerLinks.legal.map((link) => (
-              <a
-                key={link}
-                href="#"
+              <Link
+                key={link.to}
+                to={link.to}
                 className="text-body-md text-on-surface-variant transition-colors hover:text-secondary"
               >
-                {link}
-              </a>
+                {link.label}
+              </Link>
             ))}
           </div>
         </div>
@@ -111,6 +112,13 @@ export default function Footer() {
         <p className="text-[12px] tracking-widest text-on-surface-variant/40 uppercase">
           © 2026 SELVA NUTRITION. PRIMITIVE STRENGTH, REFINED PERFORMANCE.
         </p>
+        {/* CDC/Mercado Pago exigem CNPJ e endereço visíveis — preencher
+            src/data/company.ts com os dados reais antes de publicar. */}
+        {isCompanyInfoComplete() && (
+          <p className="mt-2 text-[11px] text-on-surface-variant/30">
+            {COMPANY.legalName} · CNPJ {COMPANY.cnpj} · {formatCompanyAddress()}
+          </p>
+        )}
       </div>
     </footer>
   );
