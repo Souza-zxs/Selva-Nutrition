@@ -2,6 +2,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
 import { calculateShipping } from "../_shared/shipping.ts";
 import { sendOrderReceivedEmail } from "../_shared/email.ts";
+import {
+  computeDiscount,
+  couponEligibilityError,
+  normalizeCouponCode,
+} from "../_shared/coupon.ts";
 
 type CartLine = { product_id: string; qty: number };
 
@@ -11,12 +16,13 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { lines, shipping_address, shipping, contact } =
+    const { lines, shipping_address, shipping, contact, coupon_code } =
       (await req.json()) as {
         lines: CartLine[];
         shipping_address: Record<string, unknown>;
         shipping: { service_id: string };
         contact: Record<string, unknown>;
+        coupon_code?: string | null;
       };
 
     if (!Array.isArray(lines) || lines.length === 0) {
@@ -99,6 +105,26 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Re-validated here, never trusted from the client — same reasoning as
+    // the price/stock lookup above: a discount is only real if the server
+    // agrees the coupon is still active, eligible and unused-up.
+    let discountAmount = 0;
+    let appliedCouponCode: string | null = null;
+    if (coupon_code) {
+      const { data: coupon } = await supabaseAdmin
+        .from("coupons")
+        .select("*")
+        .eq("code", normalizeCouponCode(String(coupon_code)))
+        .maybeSingle();
+
+      const eligibilityError = couponEligibilityError(coupon, subtotal);
+      if (eligibilityError) {
+        return json({ error: eligibilityError }, 400);
+      }
+      discountAmount = computeDiscount(coupon!, subtotal);
+      appliedCouponCode = coupon!.code;
+    }
+
     const zip = (shipping_address as { zip?: string }).zip ?? "";
     let shippingCost: number;
     let shippingServiceName: string;
@@ -130,6 +156,8 @@ Deno.serve(async (req) => {
         shipping_address,
         contact,
         status: "pending",
+        coupon_code: appliedCouponCode,
+        discount_amount: discountAmount,
       })
       .select()
       .single();
@@ -220,6 +248,16 @@ Deno.serve(async (req) => {
                     title: `Frete - ${shippingServiceName}`,
                     quantity: 1,
                     unit_price: shippingCost,
+                    currency_id: "BRL",
+                  },
+                ]
+              : []),
+            ...(discountAmount > 0
+              ? [
+                  {
+                    title: `Desconto (${appliedCouponCode})`,
+                    quantity: 1,
+                    unit_price: -discountAmount,
                     currency_id: "BRL",
                   },
                 ]

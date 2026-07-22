@@ -1,41 +1,23 @@
-import { FunctionsHttpError } from "@supabase/supabase-js";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { useShippingQuote } from "../hooks/useShippingQuote";
 import { formatBRL } from "../lib/currency";
 import { effectivePrice } from "../lib/pricing";
 import { supabase } from "../lib/supabase";
+import { resolveErrorMessage } from "../lib/supabaseErrors";
+import { lookupCep } from "../lib/viacep";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 
-type ShippingQuote = {
-  id: string;
-  name: string;
-  price: number;
-  etaDays: number;
+type AppliedCoupon = {
+  code: string;
+  discountAmount: number;
 };
 
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
-async function resolveErrorMessage(
-  data: { error?: string } | null,
-  invokeError: unknown,
-): Promise<string> {
-  if (data?.error) return data.error;
-  if (invokeError instanceof FunctionsHttpError) {
-    try {
-      const body = await invokeError.context.json();
-      if (body?.error) return body.error as string;
-    } catch {
-      // fall through to the generic message below
-    }
-  }
-  return invokeError instanceof Error
-    ? invokeError.message
-    : "Erro inesperado ao processar o pedido.";
 }
 
 export default function Checkout() {
@@ -52,61 +34,63 @@ export default function Checkout() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [zip, setZip] = useState("");
+  const [cepLookupError, setCepLookupError] = useState<string | null>(null);
 
-  const [shippingQuotes, setShippingQuotes] = useState<ShippingQuote[] | null>(
+  const {
+    quotes: shippingQuotes,
+    selectedId: selectedShippingId,
+    setSelectedId: setSelectedShippingId,
+    selected: selectedShipping,
+    loading: calculatingShipping,
+    error: shippingError,
+  } = useShippingQuote(zip, totalWeightKg, subtotal);
+
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(
     null,
   );
-  const [selectedShippingId, setSelectedShippingId] = useState<string | null>(
-    null,
-  );
-  const [calculatingShipping, setCalculatingShipping] = useState(false);
-  const [shippingError, setShippingError] = useState<string | null>(null);
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Autofill de endereço a partir do CEP (ViaCEP) — o cliente já digita o
+  // CEP pra calcular o frete, então evitamos fazer ele digitar rua/bairro/
+  // cidade/UF de novo na mão. Continua editável depois de preenchido.
   useEffect(() => {
     const digits = zip.replace(/\D/g, "");
     if (digits.length !== 8) {
-      setShippingQuotes(null);
-      setSelectedShippingId(null);
-      setShippingError(null);
+      setCepLookupError(null);
       return;
     }
 
     let cancelled = false;
-    setCalculatingShipping(true);
-    setShippingError(null);
-
-    const timeout = setTimeout(async () => {
-      const { data, error: invokeError } = await supabase.functions.invoke(
-        "calculate-shipping",
-        { body: { cep: digits, weight_kg: totalWeightKg, subtotal } },
-      );
+    lookupCep(digits).then((address) => {
       if (cancelled) return;
-      setCalculatingShipping(false);
-
-      if (invokeError || data?.error) {
-        setShippingQuotes(null);
-        setSelectedShippingId(null);
-        setShippingError(await resolveErrorMessage(data, invokeError));
+      if (!address) {
+        setCepLookupError("CEP não encontrado, preencha o endereço manualmente.");
         return;
       }
-
-      setShippingQuotes(data.quotes);
-      setSelectedShippingId((prev) =>
-        data.quotes.some((q: ShippingQuote) => q.id === prev)
-          ? prev
-          : (data.quotes[0]?.id ?? null),
-      );
-    }, 500);
+      setCepLookupError(null);
+      setStreet(address.street);
+      setNeighborhood(address.neighborhood);
+      setCity(address.city);
+      setState(address.state);
+    });
 
     return () => {
       cancelled = true;
-      clearTimeout(timeout);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [zip, totalWeightKg, subtotal]);
+  }, [zip]);
+
+  // Se o carrinho muda depois de aplicar o cupom, o desconto precisa ser
+  // revalidado contra o novo subtotal — mais simples soltar o cupom aplicado
+  // e deixar o cliente reaplicar do que arriscar mostrar um valor que o
+  // servidor vai recusar no create-order.
+  useEffect(() => {
+    setAppliedCoupon(null);
+  }, [subtotal]);
 
   if (lines.length === 0) {
     return <Navigate to="/" replace />;
@@ -128,9 +112,34 @@ export default function Checkout() {
       .catch(() => {});
   }
 
-  const selectedShipping =
-    shippingQuotes?.find((q) => q.id === selectedShippingId) ?? null;
-  const total = subtotal + (selectedShipping?.price ?? 0);
+  async function handleApplyCoupon() {
+    if (!couponInput.trim()) return;
+    setApplyingCoupon(true);
+    setCouponError(null);
+
+    const { data, error: invokeError } = await supabase.functions.invoke(
+      "validate-coupon",
+      { body: { code: couponInput.trim(), subtotal } },
+    );
+
+    setApplyingCoupon(false);
+    if (invokeError || data?.error) {
+      setAppliedCoupon(null);
+      setCouponError(await resolveErrorMessage(data, invokeError));
+      return;
+    }
+
+    setAppliedCoupon({ code: data.code, discountAmount: data.discount_amount });
+    setCouponInput("");
+  }
+
+  function removeCoupon() {
+    setAppliedCoupon(null);
+    setCouponError(null);
+  }
+
+  const discountAmount = appliedCoupon?.discountAmount ?? 0;
+  const total = subtotal + (selectedShipping?.price ?? 0) - discountAmount;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -159,6 +168,7 @@ export default function Checkout() {
             zip,
           },
           shipping: { service_id: selectedShipping.id },
+          coupon_code: appliedCoupon?.code,
         },
       },
     );
@@ -211,6 +221,19 @@ export default function Checkout() {
                 required
               />
             </div>
+            <div>
+              <Input
+                placeholder="CEP"
+                value={zip}
+                onChange={(e) => setZip(e.target.value)}
+                required
+              />
+              {cepLookupError && (
+                <p className="mt-2 text-xs text-on-surface-variant">
+                  {cepLookupError}
+                </p>
+              )}
+            </div>
             <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
               <Input
                 placeholder="Rua"
@@ -230,21 +253,13 @@ export default function Checkout() {
               value={complement}
               onChange={(e) => setComplement(e.target.value)}
             />
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-[2fr_1fr_1fr]">
               <Input
                 placeholder="Bairro"
                 value={neighborhood}
                 onChange={(e) => setNeighborhood(e.target.value)}
                 required
               />
-              <Input
-                placeholder="CEP"
-                value={zip}
-                onChange={(e) => setZip(e.target.value)}
-                required
-              />
-            </div>
-            <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
               <Input
                 placeholder="Cidade"
                 value={city}
@@ -342,6 +357,54 @@ export default function Checkout() {
               </div>
             )}
           </div>
+
+          <div className="mt-6 border-t border-outline-variant/20 pt-6">
+            <span className="mb-3 block text-label-caps text-on-surface-variant uppercase">
+              Cupom de desconto
+            </span>
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-on-surface-variant">
+                  {appliedCoupon.code} aplicado
+                </span>
+                <button
+                  type="button"
+                  onClick={removeCoupon}
+                  className="text-xs text-on-surface-variant/60 hover:text-error"
+                >
+                  Remover
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Código do cupom"
+                  value={couponInput}
+                  onChange={(e) => setCouponInput(e.target.value)}
+                  className="flex-grow"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleApplyCoupon}
+                  disabled={applyingCoupon || !couponInput.trim()}
+                  className="px-5"
+                >
+                  {applyingCoupon ? "..." : "Aplicar"}
+                </Button>
+              </div>
+            )}
+            {couponError && (
+              <p className="mt-2 text-sm text-error">{couponError}</p>
+            )}
+          </div>
+
+          {discountAmount > 0 && (
+            <div className="mt-6 flex justify-between text-sm text-secondary">
+              <span className="uppercase">Desconto ({appliedCoupon?.code})</span>
+              <span>-{formatBRL(discountAmount)}</span>
+            </div>
+          )}
 
           <div className="mt-6 flex justify-between border-t border-outline-variant/20 pt-6 text-body-lg text-on-surface">
             <span className="uppercase">Total</span>

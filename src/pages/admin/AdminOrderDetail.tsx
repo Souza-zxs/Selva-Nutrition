@@ -1,8 +1,8 @@
-import { FunctionsHttpError } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { formatBRL } from "../../lib/currency";
 import { supabase } from "../../lib/supabase";
+import { resolveErrorMessage } from "../../lib/supabaseErrors";
 import Icon from "../../components/Icon";
 import { OrderStatusBadge } from "../../components/admin/StatusBadge";
 import Button from "../../components/ui/Button";
@@ -20,30 +20,14 @@ type Order = {
   subtotal: number;
   shipping_cost: number;
   shipping_service: string | null;
+  coupon_code: string | null;
+  discount_amount: number;
   tracking_code: string | null;
   created_at: string;
   shipping_address: Record<string, string>;
   contact: { name?: string; email?: string; phone?: string };
   order_items: OrderItem[];
 };
-
-async function resolveErrorMessage(
-  data: { error?: string } | null,
-  invokeError: unknown,
-): Promise<string> {
-  if (data?.error) return data.error;
-  if (invokeError instanceof FunctionsHttpError) {
-    try {
-      const body = await invokeError.context.json();
-      if (body?.error) return body.error as string;
-    } catch {
-      // fall through to the generic message below
-    }
-  }
-  return invokeError instanceof Error
-    ? invokeError.message
-    : "Erro inesperado ao atualizar o pedido.";
-}
 
 const STATUSES = ["pending", "paid", "failed", "cancelled", "shipped"];
 const STATUS_LABEL: Record<string, string> = {
@@ -69,7 +53,7 @@ export default function AdminOrderDetail() {
     supabase
       .from("orders")
       .select(
-        "id, status, subtotal, shipping_cost, shipping_service, tracking_code, created_at, shipping_address, contact, order_items(qty, unit_price, products(name, image))",
+        "id, status, subtotal, shipping_cost, shipping_service, coupon_code, discount_amount, tracking_code, created_at, shipping_address, contact, order_items(qty, unit_price, products(name, image))",
       )
       .eq("id", id)
       .single()
@@ -163,7 +147,7 @@ export default function AdminOrderDetail() {
             <span className="uppercase">Subtotal</span>
             <span>{formatBRL(order.subtotal)}</span>
           </div>
-          <div className="mb-4 flex justify-between text-sm text-on-surface-variant">
+          <div className="mb-2 flex justify-between text-sm text-on-surface-variant">
             <span className="uppercase">
               Frete{order.shipping_service ? ` (${order.shipping_service})` : ""}
             </span>
@@ -173,10 +157,20 @@ export default function AdminOrderDetail() {
                 : formatBRL(order.shipping_cost)}
             </span>
           </div>
+          {order.discount_amount > 0 && (
+            <div className="mb-4 flex justify-between text-sm text-secondary">
+              <span className="uppercase">
+                Desconto{order.coupon_code ? ` (${order.coupon_code})` : ""}
+              </span>
+              <span>-{formatBRL(order.discount_amount)}</span>
+            </div>
+          )}
           <div className="flex justify-between border-t border-outline-variant/15 pt-4 text-body-lg text-on-surface">
             <span className="uppercase">Total</span>
             <span className="text-secondary">
-              {formatBRL(order.subtotal + order.shipping_cost)}
+              {formatBRL(
+                order.subtotal + order.shipping_cost - order.discount_amount,
+              )}
             </span>
           </div>
 

@@ -6,6 +6,7 @@ import EmberField from "./components/EmberField";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Product from "./pages/Product";
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import MyOrders from "./pages/MyOrders";
@@ -17,6 +18,8 @@ import AdminProducts from "./pages/admin/AdminProducts";
 import AdminProductForm from "./pages/admin/AdminProductForm";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminOrderDetail from "./pages/admin/AdminOrderDetail";
+import AdminCoupons from "./pages/admin/AdminCoupons";
+import AdminReviews from "./pages/admin/AdminReviews";
 import { useLenis } from "./hooks/useLenis";
 
 function App() {
@@ -33,6 +36,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Signup />} />
+        <Route path="/produto/:slug" element={<Product />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/pedido/:id" element={<OrderConfirmation />} />
         <Route path="/minha-conta" element={<MyOrders />} />
@@ -46,6 +50,8 @@ function App() {
           <Route path="produtos/:id" element={<AdminProductForm />} />
           <Route path="pedidos" element={<AdminOrders />} />
           <Route path="pedidos/:id" element={<AdminOrderDetail />} />
+          <Route path="cupons" element={<AdminCoupons />} />
+          <Route path="avaliacoes" element={<AdminReviews />} />
         </Route>
       </Routes>
       {!isAdmin && (

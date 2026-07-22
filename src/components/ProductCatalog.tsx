@@ -1,13 +1,16 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useProducts } from "../hooks/useProducts";
 import { formatBRL } from "../lib/currency";
 import { discountPercent } from "../lib/pricing";
 import type { Product } from "../types/product";
+import { StockBadge } from "./admin/StatusBadge";
 import Icon from "./Icon";
 import Reveal from "./motion/Reveal";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
+import QtyStepper from "./ui/QtyStepper";
 
 export default function ProductCatalog() {
   const { products, loading, error } = useProducts();
@@ -64,23 +67,34 @@ function ProductCard({
   delay: number;
 }) {
   const { addItem } = useCart();
+  const [qty, setQty] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
 
   const isOnSale = product.is_featured && product.sale_price != null;
   const discount = discountPercent(product);
+  const outOfStock = product.stock <= 0;
 
   function handleAdd() {
-    addItem(product);
+    addItem(product, qty);
     setJustAdded(true);
+    setQty(1);
     setTimeout(() => setJustAdded(false), 1600);
   }
 
   return (
+<<<<<<< Updated upstream
     <Reveal
       className="product-card flex flex-col rounded-sm p-8 shadow-lg shadow-black/30 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50"
       delay={delay}
     >
       <div className="metallic-border group relative mb-8 flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-6">
+=======
+    <Reveal className="product-card flex flex-col p-8" delay={delay}>
+      <Link
+        to={`/produto/${product.slug}`}
+        className="metallic-border group relative mb-8 flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-6"
+      >
+>>>>>>> Stashed changes
         {isOnSale && (
           <span className="absolute top-3 left-3 z-10 bg-error px-3 py-1 text-[10px] font-semibold tracking-widest text-on-surface uppercase">
             Oferta{discount ? ` -${discount}%` : ""}
@@ -98,16 +112,21 @@ function ProductCard({
             className="text-6xl text-primary-container opacity-40"
           />
         )}
-      </div>
+      </Link>
       <span className="mb-2 block text-[10px] tracking-widest text-secondary">
         {product.tag}
       </span>
-      <h3 className="font-serif mb-4 text-2xl text-on-surface uppercase">
-        {product.name}
-      </h3>
+      <Link to={`/produto/${product.slug}`}>
+        <h3 className="font-serif mb-3 text-2xl text-on-surface uppercase transition-colors hover:text-secondary">
+          {product.name}
+        </h3>
+      </Link>
       <p className="mb-4 flex-grow text-sm text-on-surface-variant">
         {product.body}
       </p>
+      <div className="mb-4">
+        <StockBadge stock={product.stock} />
+      </div>
       {isOnSale ? (
         <span className="mb-6 flex items-baseline gap-3">
           <span className="text-sm text-on-surface-variant line-through">
@@ -122,8 +141,15 @@ function ProductCard({
           {formatBRL(product.price)}
         </span>
       )}
-      <Button onClick={handleAdd} className="w-full py-4">
-        {justAdded ? "Adicionado!" : "Comprar"}
+      <div className="mb-4 flex justify-center">
+        <QtyStepper
+          value={qty}
+          onChange={setQty}
+          max={outOfStock ? 1 : product.stock}
+        />
+      </div>
+      <Button onClick={handleAdd} disabled={outOfStock} className="w-full py-4">
+        {outOfStock ? "Esgotado" : justAdded ? "Adicionado!" : "Comprar"}
       </Button>
     </Reveal>
   );

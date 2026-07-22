@@ -15,6 +15,8 @@ type Order = {
   subtotal: number;
   shipping_cost: number;
   shipping_service: string | null;
+  coupon_code: string | null;
+  discount_amount: number;
   created_at: string;
   order_items: OrderItem[];
 };
@@ -41,7 +43,7 @@ export default function OrderConfirmation() {
       const { data, error } = await supabase
         .from("orders")
         .select(
-          "id, status, subtotal, shipping_cost, shipping_service, created_at, order_items(qty, unit_price, products(name))",
+          "id, status, subtotal, shipping_cost, shipping_service, coupon_code, discount_amount, created_at, order_items(qty, unit_price, products(name))",
         )
         .eq("id", id)
         .single();
@@ -92,7 +94,7 @@ export default function OrderConfirmation() {
               <span className="uppercase">Subtotal</span>
               <span>{formatBRL(order.subtotal)}</span>
             </div>
-            <div className="mb-6 flex justify-between text-sm text-on-surface-variant">
+            <div className="mb-3 flex justify-between text-sm text-on-surface-variant">
               <span className="uppercase">
                 Frete{order.shipping_service ? ` (${order.shipping_service})` : ""}
               </span>
@@ -102,10 +104,20 @@ export default function OrderConfirmation() {
                   : formatBRL(order.shipping_cost)}
               </span>
             </div>
+            {order.discount_amount > 0 && (
+              <div className="mb-6 flex justify-between text-sm text-secondary">
+                <span className="uppercase">
+                  Desconto{order.coupon_code ? ` (${order.coupon_code})` : ""}
+                </span>
+                <span>-{formatBRL(order.discount_amount)}</span>
+              </div>
+            )}
             <div className="mb-10 flex justify-between border-t border-outline-variant/20 pt-6 text-body-lg text-on-surface">
               <span className="uppercase">Total</span>
               <span className="text-secondary">
-                {formatBRL(order.subtotal + order.shipping_cost)}
+                {formatBRL(
+                  order.subtotal + order.shipping_cost - order.discount_amount,
+                )}
               </span>
             </div>
           </>

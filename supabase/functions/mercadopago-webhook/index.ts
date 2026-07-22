@@ -64,7 +64,9 @@ Deno.serve(async (req) => {
 
     const { data: order } = await supabaseAdmin
       .from("orders")
-      .select("id, status, contact, subtotal, shipping_cost, shipping_service")
+      .select(
+        "id, status, contact, subtotal, shipping_cost, shipping_service, coupon_code",
+      )
       .eq("id", orderId)
       .single();
 
@@ -88,6 +90,12 @@ Deno.serve(async (req) => {
         await supabaseAdmin.rpc("decrement_stock", {
           p_product_id: item.product_id,
           p_qty: item.qty,
+        });
+      }
+
+      if (order.coupon_code) {
+        await supabaseAdmin.rpc("increment_coupon_usage", {
+          p_code: order.coupon_code,
         });
       }
 

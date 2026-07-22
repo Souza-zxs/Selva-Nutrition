@@ -7,6 +7,8 @@ import Icon from "../../components/Icon";
 const NAV = [
   { to: "/admin/produtos", label: "Produtos", icon: "inventory" },
   { to: "/admin/pedidos", label: "Pedidos", icon: "receipt" },
+  { to: "/admin/cupons", label: "Cupons", icon: "bolt" },
+  { to: "/admin/avaliacoes", label: "Avaliações", icon: "verified" },
 ];
 
 export default function AdminLayout() {
