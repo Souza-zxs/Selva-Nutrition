@@ -4,7 +4,7 @@ type Variant = "filled" | "outline";
 
 const VARIANTS: Record<Variant, string> = {
   filled:
-    "bg-secondary text-primary-container hover:shadow-[0_0_25px_rgba(201,162,39,0.35)]",
+    "relative overflow-hidden bg-secondary text-primary-container hover:shadow-[0_0_25px_rgba(201,162,39,0.35)] before:absolute before:inset-0 before:-translate-x-full before:bg-[linear-gradient(115deg,transparent_35%,rgba(255,255,255,0.4)_50%,transparent_65%)] before:transition-transform before:duration-700 before:ease-out hover:before:translate-x-full",
   outline: "metallic-border text-secondary hover:bg-secondary/10",
 };
 

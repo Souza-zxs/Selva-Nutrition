@@ -6,7 +6,7 @@ export default function Manifesto() {
   return (
     <section
       id="manifesto"
-      className="texture-kraft bg-surface-container-lowest px-margin-mobile py-32 md:px-margin-desktop"
+      className="bg-surface-container-low px-margin-mobile py-32 md:px-margin-desktop"
     >
       <div className="relative mx-auto grid max-w-container-max items-center gap-16 md:grid-cols-2">
         <Reveal>
@@ -39,7 +39,7 @@ export default function Manifesto() {
           </div>
         </Reveal>
         <Reveal delay={150} className="relative">
-          <div className="absolute inset-0 rounded-full bg-secondary/5 blur-[100px]" />
+          <div className="absolute inset-x-0 bottom-0 h-2/3 rounded-full bg-secondary/10 blur-[100px]" />
           <div className="metallic-border relative z-10 rounded-lg bg-on-surface p-8 shadow-2xl">
             <img
               alt="Linha SELVA Nutrition — manteigas Tallow"

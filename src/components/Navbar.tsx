@@ -19,7 +19,7 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 z-50 w-full transition-all duration-500 ${
         scrolled
-          ? "bg-background/98 py-4 shadow-2xl"
+          ? "bg-background/70 py-4 shadow-2xl backdrop-blur-lg"
           : "bg-transparent py-8"
       }`}
     >
@@ -37,9 +37,10 @@ export default function Navbar() {
               key={link.label}
               href={link.href}
               onClick={(e) => handleAnchorNav(e, link.href)}
-              className="text-label-caps text-on-surface-variant uppercase transition-colors duration-300 hover:text-secondary"
+              className="group relative py-1 text-label-caps text-on-surface-variant uppercase transition-colors duration-300 hover:text-secondary"
             >
               {link.label}
+              <span className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-secondary transition-transform duration-300 ease-out group-hover:scale-x-100" />
             </a>
           ))}
         </div>
@@ -79,7 +80,7 @@ export default function Navbar() {
             onClick={(e) => handleAnchorNav(e, "#colecao")}
             className={buttonClass("filled", "hidden px-6 py-2 active:scale-95 md:block")}
           >
-            Shop Now
+            Comprar
           </a>
           <button
             aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
@@ -133,7 +134,7 @@ export default function Navbar() {
                   }}
                   className={buttonClass("filled", "px-6 py-3 text-center")}
                 >
-                  Shop Now
+                  Comprar
                 </a>
               </div>
             </motion.div>

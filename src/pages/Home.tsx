@@ -13,20 +13,20 @@ export default function Home() {
   return (
     <main>
       <Hero />
-      <SectionDivider from="--color-surface" to="--color-surface-container-lowest" />
+      <SectionDivider from="--color-surface" to="--color-surface-container-low" />
       <div ref={rootRef} className="relative">
         <BotanicalMotif
           containerRef={rootRef}
           className="pointer-events-none absolute top-0 left-1/2 z-20 hidden h-full w-[640px] -translate-x-1/2 opacity-[0.20] lg:block"
         />
         <Manifesto />
-        <SectionDivider from="--color-surface-container-lowest" to="--color-background" />
+        <SectionDivider from="--color-surface-container-low" to="--color-background" />
         <ProductCatalog />
         <SectionDivider from="--color-background" to="--color-surface-container-low" />
         <TrustBadges />
         <SectionDivider from="--color-surface-container-low" to="--color-surface-container" />
         <Ecosystem />
-        <SectionDivider from="--color-surface-container" to="--color-surface-container-lowest" />
+        <SectionDivider from="--color-surface-container" to="--color-surface-container-low" />
       </div>
     </main>
   );

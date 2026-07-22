@@ -2,6 +2,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import CartDrawer from "./components/CartDrawer";
+import EmberField from "./components/EmberField";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -22,6 +23,7 @@ function App() {
   return (
     <div className="antialiased">
       {!isAdmin && <div className="grain-overlay" />}
+      {!isAdmin && <EmberField variant="ambient" className="fixed inset-0 z-20" />}
       {!isAdmin && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />

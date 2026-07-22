@@ -34,7 +34,7 @@ export default function ProductCatalog() {
             instantes.
           </p>
         )}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3 lg:gap-12">
           {loading
             ? Array.from({ length: 6 }).map((_, index) => (
                 <div
@@ -76,7 +76,10 @@ function ProductCard({
   }
 
   return (
-    <Reveal className="product-card flex flex-col p-8" delay={delay}>
+    <Reveal
+      className="product-card flex flex-col rounded-sm p-8 shadow-lg shadow-black/30 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50"
+      delay={delay}
+    >
       <div className="metallic-border group relative mb-8 flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-6">
         {isOnSale && (
           <span className="absolute top-3 left-3 z-10 bg-error px-3 py-1 text-[10px] font-semibold tracking-widest text-on-surface uppercase">
