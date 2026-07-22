@@ -269,7 +269,10 @@ Deno.serve(async (req) => {
             pending: `${siteUrl}/pedido/${order.id}`,
             failure: `${siteUrl}/pedido/${order.id}`,
           },
-          auto_return: "approved",
+          // auto_return requires back_urls.success to be a publicly reachable
+          // URL — Mercado Pago rejects it outright when SITE_URL still falls
+          // back to localhost (dev/no secret configured yet).
+          ...(siteUrl.includes("localhost") ? {} : { auto_return: "approved" }),
           notification_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/mercadopago-webhook`,
         }),
       },
