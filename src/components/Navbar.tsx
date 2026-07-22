@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { navLinks } from "../data/content";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { useIsAdmin } from "../hooks/useIsAdmin";
 import { useStickyNavbar } from "../hooks/useStickyNavbar";
 import { handleAnchorNav } from "../hooks/useLenis";
 import Icon from "./Icon";
@@ -13,25 +14,45 @@ export default function Navbar() {
   const scrolled = useStickyNavbar();
   const { itemCount, open } = useCart();
   const { user } = useAuth();
+  const isAdmin = useIsAdmin();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <nav
-      className={`fixed top-0 left-0 z-50 w-full transition-all duration-500 ${
-        scrolled
-          ? "bg-background/70 py-4 shadow-2xl backdrop-blur-lg"
-          : "bg-transparent py-8"
+      className={`fixed top-0 left-0 z-50 w-full transition-[padding] duration-500 ${
+        scrolled ? "py-4" : "py-8"
       }`}
     >
-      <div className="mx-auto flex w-full max-w-container-max items-center justify-between px-margin-mobile md:px-margin-desktop">
-        <Link to="/" aria-label="Selva Nutrition — início" className="flex items-center">
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-0 transition-all duration-300 ease-out ${
+          scrolled
+            ? "bg-background/70 shadow-lg backdrop-blur-md"
+            : "bg-linear-to-b from-black/45 via-black/10 to-transparent"
+        }`}
+      />
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-x-0 bottom-0 h-px origin-right bg-linear-to-r from-transparent via-secondary to-transparent transition-transform duration-500 ease-in-out ${
+          scrolled ? "scale-x-100" : "scale-x-0"
+        }`}
+      />
+      <div className="relative mx-auto grid w-full max-w-container-max grid-cols-[1fr_auto_1fr] items-center gap-gutter px-margin-mobile md:px-margin-desktop">
+        <Link
+          to="/"
+          aria-label="Selva Nutrition — início"
+          className="group flex items-center gap-3"
+        >
           <img
             src="/logo-selva-touro.png"
-            alt="Selva Nutrition"
-            className="h-16 w-auto object-contain transition-transform duration-300 hover:scale-105 md:h-24"
+            alt=""
+            className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105 md:h-14"
           />
+          <span className="font-serif text-lg leading-none tracking-[0.2em] text-on-surface uppercase transition-colors duration-300 group-hover:text-secondary md:text-xl">
+            Selva
+          </span>
         </Link>
-        <div className="hidden items-center gap-gutter md:flex">
+        <div className="hidden items-center justify-center gap-gutter md:flex">
           {navLinks.map((link) => (
             <a
               key={link.label}
@@ -44,27 +65,40 @@ export default function Navbar() {
             </a>
           ))}
         </div>
-        <div className="flex items-center gap-6">
-          <Link
-            to={user ? "/minha-conta" : "/login"}
-            aria-label={user ? "Minha conta" : "Entrar"}
-            className="scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
-            title={user?.email ?? undefined}
-          >
-            <Icon name="person" />
-          </Link>
-          <button
-            aria-label={`Carrinho${itemCount > 0 ? ` (${itemCount} ${itemCount === 1 ? "item" : "itens"})` : ""}`}
-            onClick={open}
-            className="relative scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
-          >
-            <Icon name="shopping_bag" />
-            {itemCount > 0 && (
-              <span className="absolute -top-2.5 -right-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-[11px] font-bold text-primary-container">
-                {itemCount}
-              </span>
+        <div className="flex items-center justify-end gap-5 md:gap-6">
+          <div className="flex items-center gap-5">
+            <Link
+              to={user ? "/minha-conta" : "/login"}
+              aria-label={user ? "Minha conta" : "Entrar"}
+              className="scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
+              title={user?.email ?? undefined}
+            >
+              <Icon name="person" />
+            </Link>
+            <button
+              aria-label={`Carrinho${itemCount > 0 ? ` (${itemCount} ${itemCount === 1 ? "item" : "itens"})` : ""}`}
+              onClick={open}
+              className="relative scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
+            >
+              <Icon name="shopping_bag" />
+              {itemCount > 0 && (
+                <span className="absolute -top-2.5 -right-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-[11px] font-bold text-primary-container">
+                  {itemCount}
+                </span>
+              )}
+            </button>
+            {isAdmin && (
+              <Link
+                to="/admin/produtos"
+                aria-label="Painel admin"
+                title="Painel admin"
+                className="scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
+              >
+                <Icon name="inventory" />
+              </Link>
             )}
-          </button>
+          </div>
+          <span aria-hidden className="hidden h-6 w-px bg-outline-variant/50 md:block" />
           <a
             href="#colecao"
             onClick={(e) => handleAnchorNav(e, "#colecao")}
@@ -116,6 +150,15 @@ export default function Navbar() {
                     {link.label}
                   </a>
                 ))}
+                {isAdmin && (
+                  <Link
+                    to="/admin/produtos"
+                    onClick={() => setMenuOpen(false)}
+                    className="text-label-caps text-secondary uppercase transition-colors duration-300 hover:text-on-surface"
+                  >
+                    Painel admin
+                  </Link>
+                )}
                 <a
                   href="#colecao"
                   onClick={(e) => {

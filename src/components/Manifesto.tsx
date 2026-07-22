@@ -40,7 +40,7 @@ export default function Manifesto() {
         </Reveal>
         <Reveal delay={150} className="relative">
           <div className="absolute inset-x-0 bottom-0 h-2/3 rounded-full bg-secondary/10 blur-[100px]" />
-          <div className="metallic-border relative z-10 rounded-lg bg-on-surface p-8 shadow-2xl">
+          <div className="metallic-border photo-frame-vignette relative z-10 rounded-lg bg-on-surface p-8 shadow-2xl">
             <img
               alt="Linha SELVA Nutrition — manteigas Tallow"
               className="w-full object-contain transition-transform duration-1000 hover:scale-105"

@@ -214,113 +214,123 @@ export default function AdminProductForm() {
           )}
         </div>
 
-        <div className="flex flex-col gap-5">
-          <div>
-            <label className={labelClass} htmlFor="name">
-              Nome
-            </label>
-            <input
-              id="name"
-              className={inputClass}
-              value={name}
-              onChange={(e) => handleNameChange(e.target.value)}
-              required
-            />
-            <div className="mt-2 flex items-center gap-2 text-xs text-on-surface-variant">
-              <span>URL: /{slug || "..."}</span>
-              {!slugEdited ? (
-                <button
-                  type="button"
-                  onClick={() => setSlugEdited(true)}
-                  className="text-secondary hover:underline"
-                >
-                  editar
-                </button>
-              ) : (
-                <input
-                  className="border-none bg-transparent text-secondary underline focus:outline-none"
-                  value={slug}
-                  onChange={(e) => setSlug(slugify(e.target.value))}
-                />
-              )}
+        <div className="flex flex-col gap-6">
+          <div className="admin-panel flex flex-col gap-5 p-6">
+            <h3 className="text-xs font-bold tracking-wide text-on-surface-variant uppercase">
+              Informações
+            </h3>
+            <div>
+              <label className={labelClass} htmlFor="name">
+                Nome
+              </label>
+              <input
+                id="name"
+                className={inputClass}
+                value={name}
+                onChange={(e) => handleNameChange(e.target.value)}
+                required
+              />
+              <div className="mt-2 flex items-center gap-2 text-xs text-on-surface-variant">
+                <span>URL: /{slug || "..."}</span>
+                {!slugEdited ? (
+                  <button
+                    type="button"
+                    onClick={() => setSlugEdited(true)}
+                    className="text-secondary hover:underline"
+                  >
+                    editar
+                  </button>
+                ) : (
+                  <input
+                    className="border-none bg-transparent text-secondary underline focus:outline-none"
+                    value={slug}
+                    onChange={(e) => setSlug(slugify(e.target.value))}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="tag">
+                Selo (opcional)
+              </label>
+              <input
+                id="tag"
+                className={inputClass}
+                placeholder="Ex: OURO LÍQUIDO"
+                value={tag}
+                onChange={(e) => setTag(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor="body">
+                Descrição
+              </label>
+              <textarea
+                id="body"
+                className={inputClass}
+                rows={3}
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+              />
             </div>
           </div>
 
-          <div>
-            <label className={labelClass} htmlFor="tag">
-              Selo (opcional)
-            </label>
-            <input
-              id="tag"
-              className={inputClass}
-              placeholder="Ex: OURO LÍQUIDO"
-              value={tag}
-              onChange={(e) => setTag(e.target.value)}
-            />
-          </div>
+          <div className="admin-panel flex flex-col gap-5 p-6">
+            <h3 className="text-xs font-bold tracking-wide text-on-surface-variant uppercase">
+              Preço, estoque &amp; frete
+            </h3>
+            <div className="grid grid-cols-2 gap-5">
+              <div>
+                <label className={labelClass} htmlFor="price">
+                  Preço (R$)
+                </label>
+                <input
+                  id="price"
+                  className={inputClass}
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className={labelClass} htmlFor="stock">
+                  Estoque
+                </label>
+                <input
+                  id="stock"
+                  className={inputClass}
+                  type="number"
+                  min="0"
+                  value={stock}
+                  onChange={(e) => setStock(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
 
-          <div>
-            <label className={labelClass} htmlFor="body">
-              Descrição
-            </label>
-            <textarea
-              id="body"
-              className={inputClass}
-              rows={3}
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-5">
             <div>
-              <label className={labelClass} htmlFor="price">
-                Preço (R$)
+              <label className={labelClass} htmlFor="weight">
+                Peso (kg) — usado para calcular o frete
               </label>
               <input
-                id="price"
+                id="weight"
                 className={inputClass}
                 type="number"
                 step="0.01"
-                min="0"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className={labelClass} htmlFor="stock">
-                Estoque
-              </label>
-              <input
-                id="stock"
-                className={inputClass}
-                type="number"
-                min="0"
-                value={stock}
-                onChange={(e) => setStock(e.target.value)}
+                min="0.01"
+                value={weightKg}
+                onChange={(e) => setWeightKg(e.target.value)}
                 required
               />
             </div>
           </div>
 
-          <div>
-            <label className={labelClass} htmlFor="weight">
-              Peso (kg) — usado para calcular o frete
-            </label>
-            <input
-              id="weight"
-              className={inputClass}
-              type="number"
-              step="0.01"
-              min="0.01"
-              value={weightKg}
-              onChange={(e) => setWeightKg(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="carved-well bg-surface-dim p-5">
+          <div className="admin-panel p-6">
             <label className="flex w-fit cursor-pointer items-center gap-3">
               <span className={labelClass + " mb-0"}>Em oferta / promoção</span>
               <span
@@ -359,13 +369,11 @@ export default function AdminProductForm() {
             )}
           </div>
 
-          <label className="flex w-fit cursor-pointer items-center gap-3">
-            <span className={labelClass + " mb-0"}>
-              Visível no catálogo
-            </span>
+          <div className="admin-panel flex items-center justify-between p-6">
+            <span className={labelClass + " mb-0"}>Visível no catálogo</span>
             <span
               onClick={() => setActive((a) => !a)}
-              className={`relative h-6 w-11 rounded-full transition-colors ${
+              className={`relative h-6 w-11 cursor-pointer rounded-full transition-colors ${
                 active ? "bg-secondary" : "bg-surface-dim"
               }`}
             >
@@ -375,7 +383,7 @@ export default function AdminProductForm() {
                 }`}
               />
             </span>
-          </label>
+          </div>
 
           {error && <p className="text-sm text-error">{error}</p>}
 

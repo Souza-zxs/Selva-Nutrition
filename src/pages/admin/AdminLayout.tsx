@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
 import { NavLink, Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { supabase } from "../../lib/supabase";
+import { useIsAdmin } from "../../hooks/useIsAdmin";
 import Icon from "../../components/Icon";
 
 const NAV = [
@@ -14,26 +13,7 @@ const NAV = [
 export default function AdminLayout() {
   const { user, loading: authLoading, signOut } = useAuth();
   const location = useLocation();
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    if (!user) {
-      setIsAdmin(null);
-      return;
-    }
-    let cancelled = false;
-    supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single()
-      .then(({ data }) => {
-        if (!cancelled) setIsAdmin(data?.role === "admin");
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
+  const isAdmin = useIsAdmin();
 
   if (authLoading) {
     return <FullScreenMessage text="Carregando..." />;
@@ -54,7 +34,7 @@ export default function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <aside className="flex w-64 shrink-0 flex-col border-r border-outline-variant/15 bg-surface-container-lowest">
+      <aside className="flex w-64 shrink-0 flex-col border-r border-outline-variant/15 bg-surface-container-lowest shadow-[4px_0_16px_rgba(0,0,0,0.25)]">
         <div className="border-b border-outline-variant/15 px-8 py-8">
           <span className="font-serif block text-xl tracking-tight text-secondary uppercase">
             Selva
@@ -96,8 +76,8 @@ export default function AdminLayout() {
       </aside>
 
       <main className="flex-1">
-        <header className="border-b border-outline-variant/15 px-10 py-8">
-          <h1 className="font-serif text-2xl text-on-surface uppercase">
+        <header className="border-b border-outline-variant/15 bg-surface-container-lowest/40 px-10 py-8">
+          <h1 className="text-xl font-bold tracking-tight text-on-surface uppercase">
             {currentLabel}
           </h1>
         </header>

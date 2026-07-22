@@ -72,7 +72,7 @@ export default function AdminReviews() {
       {loading ? (
         <div className="h-32 animate-pulse bg-surface-container-lowest" />
       ) : filtered.length === 0 ? (
-        <div className="metallic-border flex flex-col items-center gap-4 bg-surface-container-lowest px-8 py-20 text-center">
+        <div className="admin-panel flex flex-col items-center gap-4 px-8 py-20 text-center">
           <Icon name="check_circle" className="text-4xl text-secondary opacity-60" />
           <p className="text-on-surface-variant">
             {filter === "pending"
@@ -85,7 +85,7 @@ export default function AdminReviews() {
           {filtered.map((review) => (
             <li
               key={review.id}
-              className="metallic-border bg-surface-container-lowest p-6"
+              className="admin-panel admin-row-hover p-6"
             >
               <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
                 <div>

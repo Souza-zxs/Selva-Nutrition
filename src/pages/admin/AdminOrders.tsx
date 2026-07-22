@@ -40,7 +40,7 @@ export default function AdminOrders() {
 
   if (orders.length === 0) {
     return (
-      <div className="metallic-border flex flex-col items-center gap-4 bg-surface-container-lowest px-8 py-20 text-center">
+      <div className="admin-panel flex flex-col items-center gap-4 px-8 py-20 text-center">
         <Icon name="receipt" className="text-4xl text-secondary opacity-60" />
         <p className="text-on-surface-variant">Nenhum pedido ainda.</p>
       </div>
@@ -48,10 +48,10 @@ export default function AdminOrders() {
   }
 
   return (
-    <div className="metallic-border overflow-x-auto bg-surface-container-lowest">
+    <div className="admin-panel overflow-x-auto">
       <table className="w-full min-w-[640px] border-collapse text-left text-sm">
         <thead>
-          <tr className="border-b border-outline-variant/15 text-label-caps text-on-surface-variant uppercase">
+          <tr className="border-b border-outline-variant/15 bg-surface-container/30 text-label-caps text-on-surface-variant uppercase">
             <th className="py-4 pr-4 pl-6">Pedido</th>
             <th className="py-4 pr-4">Cliente</th>
             <th className="py-4 pr-4">Data</th>
@@ -63,12 +63,12 @@ export default function AdminOrders() {
           {orders.map((order) => (
             <tr
               key={order.id}
-              className="border-b border-outline-variant/10 text-on-surface last:border-0"
+              className="admin-row-hover border-b border-outline-variant/10 text-on-surface last:border-0"
             >
               <td className="py-3 pr-4 pl-6">
                 <Link
                   to={`/admin/pedidos/${order.id}`}
-                  className="text-secondary hover:underline"
+                  className="text-on-surface hover:text-secondary hover:underline"
                 >
                   #{order.id.slice(0, 8)}
                 </Link>

@@ -105,7 +105,7 @@ export default function AdminOrderDetail() {
           <span className="text-label-caps text-on-surface-variant uppercase">
             Pedido
           </span>
-          <h2 className="font-serif text-xl text-on-surface">
+          <h2 className="text-xl font-bold tracking-tight text-on-surface">
             #{order.id.slice(0, 8)}
           </h2>
         </div>
@@ -113,8 +113,8 @@ export default function AdminOrderDetail() {
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">
-        <div className="metallic-border bg-surface-container-lowest p-6">
-          <h3 className="font-serif mb-5 text-lg text-on-surface uppercase">
+        <div className="admin-panel p-6">
+          <h3 className="mb-5 text-lg font-bold tracking-tight text-on-surface uppercase">
             Itens
           </h3>
           <ul className="mb-5 flex flex-col gap-4">
@@ -174,7 +174,7 @@ export default function AdminOrderDetail() {
             </span>
           </div>
 
-          <h3 className="font-serif mt-8 mb-3 text-lg text-on-surface uppercase">
+          <h3 className="mt-8 mb-3 text-lg font-bold tracking-tight text-on-surface uppercase">
             Cliente
           </h3>
           <p className="text-sm text-on-surface-variant">
@@ -184,8 +184,8 @@ export default function AdminOrderDetail() {
           </p>
         </div>
 
-        <div className="metallic-border bg-surface-container-lowest p-6">
-          <h3 className="font-serif mb-5 text-lg text-on-surface uppercase">
+        <div className="admin-panel p-6">
+          <h3 className="mb-5 text-lg font-bold tracking-tight text-on-surface uppercase">
             Endereço de entrega
           </h3>
           <p className="mb-8 text-sm text-on-surface-variant">
@@ -196,7 +196,7 @@ export default function AdminOrderDetail() {
             CEP {addr?.zip}
           </p>
 
-          <h3 className="font-serif mb-3 text-lg text-on-surface uppercase">
+          <h3 className="mb-3 text-lg font-bold tracking-tight text-on-surface uppercase">
             Atualizar status
           </h3>
           <div className="flex flex-wrap items-center gap-3">

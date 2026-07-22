@@ -21,12 +21,19 @@ export default function Footer() {
     >
       <div className="mx-auto flex w-full max-w-container-max flex-col items-start justify-between gap-12 px-margin-mobile py-16 md:flex-row md:items-center md:px-margin-desktop">
         <div className="max-w-sm">
-          <Link to="/" aria-label="Selva Nutrition — início" className="mb-6 inline-block">
+          <Link
+            to="/"
+            aria-label="Selva Nutrition — início"
+            className="group mb-6 inline-flex items-center gap-4"
+          >
             <img
               src="/logo-selva-touro.png"
-              alt="Selva Nutrition"
-              className="h-24 w-auto object-contain"
+              alt=""
+              className="h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />
+            <span className="font-serif text-2xl leading-none tracking-[0.2em] text-on-surface uppercase transition-colors duration-300 group-hover:text-secondary">
+              Selva
+            </span>
           </Link>
           <p className="text-body-md text-on-surface-variant italic">
             "Primitive Strength, Refined Performance."

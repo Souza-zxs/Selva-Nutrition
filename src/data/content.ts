@@ -7,8 +7,6 @@ export const navLinks = [
 export const hero = {
   eyebrow: "SELVA NUTRITION",
   title: "A CIÊNCIA DA SELVA APLICADA À SUA PERFORMACE DIÁRIA.",
-  subtitle:
-    "Nutrição Ancestral. Performance Moderna.",
   primaryCta: "Explorar Coleção",
   secondaryCta: "Nossa Origem",
 };

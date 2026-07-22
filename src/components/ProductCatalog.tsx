@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { PLACEHOLDER_KIT_IDS } from "../data/catalogOverrides";
 import { useProducts } from "../hooks/useProducts";
 import { formatBRL } from "../lib/currency";
 import { discountPercent } from "../lib/pricing";
@@ -72,7 +73,9 @@ function ProductCard({
 
   const isOnSale = product.is_featured && product.sale_price != null;
   const discount = discountPercent(product);
+  const isPlaceholder = PLACEHOLDER_KIT_IDS.has(product.id);
   const outOfStock = product.stock <= 0;
+  const unavailable = outOfStock || isPlaceholder;
 
   function handleAdd() {
     addItem(product, qty);
@@ -81,71 +84,104 @@ function ProductCard({
     setTimeout(() => setJustAdded(false), 1600);
   }
 
+  const media = (
+    <>
+      {isOnSale && (
+        <span className="absolute top-3 left-3 z-10 bg-error px-3 py-1 text-[10px] font-semibold tracking-widest text-on-surface uppercase">
+          Oferta{discount ? ` -${discount}%` : ""}
+        </span>
+      )}
+      {unavailable && (
+        <span className="absolute top-3 right-3 z-10 border border-outline-variant/40 bg-surface-container-lowest/90 px-3 py-1 text-[10px] font-semibold tracking-widest text-on-surface-variant uppercase backdrop-blur-sm">
+          {isPlaceholder ? "Em breve" : "Esgotado"}
+        </span>
+      )}
+      {product.image ? (
+        <img
+          alt={product.name}
+          className={`h-full w-full object-contain transition-transform duration-500 ${
+            unavailable ? "opacity-40 grayscale" : "group-hover:scale-105"
+          }`}
+          src={product.image}
+        />
+      ) : (
+        <Icon
+          name={product.icon ?? "spa"}
+          className="text-6xl text-primary-container opacity-40"
+        />
+      )}
+    </>
+  );
+
   return (
     <Reveal
       className="product-card flex flex-col rounded-sm p-8 shadow-lg shadow-black/30 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50"
       delay={delay}
     >
-      <Link
-        to={`/produto/${product.slug}`}
-        className="metallic-border group relative mb-8 flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-6"
-      >
-        {isOnSale && (
-          <span className="absolute top-3 left-3 z-10 bg-error px-3 py-1 text-[10px] font-semibold tracking-widest text-on-surface uppercase">
-            Oferta{discount ? ` -${discount}%` : ""}
-          </span>
-        )}
-        {product.image ? (
-          <img
-            alt={product.name}
-            className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
-            src={product.image}
-          />
-        ) : (
-          <Icon
-            name={product.icon ?? "spa"}
-            className="text-6xl text-primary-container opacity-40"
-          />
-        )}
-      </Link>
+      {isPlaceholder ? (
+        <div className="metallic-border photo-frame-vignette group relative mb-8 flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-6">
+          {media}
+        </div>
+      ) : (
+        <Link
+          to={`/produto/${product.slug}`}
+          className="metallic-border photo-frame-vignette group relative mb-8 flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-6"
+        >
+          {media}
+        </Link>
+      )}
       <span className="mb-2 block text-[10px] tracking-widest text-secondary">
         {product.tag}
       </span>
-      <Link to={`/produto/${product.slug}`}>
-        <h3 className="font-serif mb-3 text-2xl text-on-surface uppercase transition-colors hover:text-secondary">
+      {isPlaceholder ? (
+        <h3 className="font-serif mb-3 text-2xl text-on-surface uppercase">
           {product.name}
         </h3>
-      </Link>
+      ) : (
+        <Link to={`/produto/${product.slug}`}>
+          <h3 className="font-serif mb-3 text-2xl text-on-surface uppercase transition-colors hover:text-secondary">
+            {product.name}
+          </h3>
+        </Link>
+      )}
       <p className="mb-4 flex-grow text-sm text-on-surface-variant">
         {product.body}
       </p>
-      <div className="mb-4">
-        <StockBadge stock={product.stock} />
-      </div>
+      {!isPlaceholder && !outOfStock && product.stock <= 10 && (
+        <div className="mb-4">
+          <StockBadge stock={product.stock} />
+        </div>
+      )}
       {isOnSale ? (
         <span className="mb-6 flex items-baseline gap-3">
           <span className="text-sm text-on-surface-variant line-through">
             {formatBRL(product.price)}
           </span>
-          <span className="text-body-lg text-secondary">
+          <span className="font-serif text-2xl text-secondary">
             {formatBRL(product.sale_price!)}
           </span>
         </span>
       ) : (
-        <span className="mb-6 block text-body-lg text-on-surface">
+        <span className="font-serif mb-6 block text-2xl text-secondary">
           {formatBRL(product.price)}
         </span>
       )}
-      <div className="mb-4 flex justify-center">
+      <div className="flex items-center gap-3">
         <QtyStepper
           value={qty}
           onChange={setQty}
           max={outOfStock ? 1 : product.stock}
         />
+        <Button onClick={handleAdd} disabled={unavailable} className="flex-1 py-3">
+          {isPlaceholder
+            ? "Em breve"
+            : outOfStock
+              ? "Esgotado"
+              : justAdded
+                ? "Adicionado!"
+                : "Comprar"}
+        </Button>
       </div>
-      <Button onClick={handleAdd} disabled={outOfStock} className="w-full py-4">
-        {outOfStock ? "Esgotado" : justAdded ? "Adicionado!" : "Comprar"}
-      </Button>
     </Reveal>
   );
 }

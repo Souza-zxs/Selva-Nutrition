@@ -47,7 +47,7 @@ export default function AdminProducts() {
   return (
     <div>
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="carved-well flex items-center gap-3 bg-surface-dim px-4 py-3 sm:max-w-xs">
+        <div className="carved-well flex items-center gap-3 border border-outline-variant/10 bg-surface-dim px-4 py-3 sm:max-w-xs">
           <Icon name="search" className="text-on-surface-variant" />
           <input
             value={query}
@@ -69,10 +69,10 @@ export default function AdminProducts() {
       ) : filtered.length === 0 ? (
         <EmptyState hasQuery={query.length > 0} />
       ) : (
-        <div className="metallic-border overflow-x-auto bg-surface-container-lowest">
+        <div className="admin-panel overflow-x-auto">
           <table className="w-full min-w-[640px] border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-outline-variant/15 text-label-caps text-on-surface-variant uppercase">
+              <tr className="border-b border-outline-variant/15 bg-surface-container/30 text-label-caps text-on-surface-variant uppercase">
                 <th className="py-4 pr-4 pl-6"></th>
                 <th className="py-4 pr-4">Nome</th>
                 <th className="py-4 pr-4">Preço</th>
@@ -85,7 +85,7 @@ export default function AdminProducts() {
               {filtered.map((product) => (
                 <tr
                   key={product.id}
-                  className="border-b border-outline-variant/10 text-on-surface last:border-0"
+                  className="admin-row-hover border-b border-outline-variant/10 text-on-surface last:border-0"
                 >
                   <td className="py-3 pr-4 pl-6">
                     <div className="flex h-12 w-12 items-center justify-center overflow-hidden bg-on-surface">
@@ -139,7 +139,7 @@ export default function AdminProducts() {
                     <div className="flex justify-end gap-4">
                       <Link
                         to={`/admin/produtos/${product.id}`}
-                        className="text-secondary hover:underline"
+                        className="text-on-surface hover:text-secondary hover:underline"
                       >
                         Editar
                       </Link>
@@ -176,7 +176,7 @@ function SkeletonRows() {
 
 function EmptyState({ hasQuery }: { hasQuery: boolean }) {
   return (
-    <div className="metallic-border flex flex-col items-center gap-4 bg-surface-container-lowest px-8 py-20 text-center">
+    <div className="admin-panel flex flex-col items-center gap-4 px-8 py-20 text-center">
       <Icon
         name="inventory"
         className="text-4xl text-secondary opacity-60"
