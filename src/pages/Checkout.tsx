@@ -421,3 +421,5 @@ export default function Checkout() {
     </section>
   );
 }
+
+
