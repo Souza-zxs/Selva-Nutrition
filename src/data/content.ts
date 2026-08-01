@@ -17,7 +17,7 @@ export const manifesto = {
   title: "Autonomia Biológica em um mundo industrial.",
   body: "A indústria moderna falhou. Fomos convencidos de que óleos vegetais e açúcares refinados são o combustível da vida, enquanto inflamação crônica, brain fog e cansaço viraram normalidade. Na SELVA, resgatamos a sabedoria ancestral para destravar a performance humana superior.",
   bodySecondary:
-    "Não seguimos diretrizes nutricionais obsoletas, não confiamos em quem lucra tratando sintomas em vez de curar, e não aceitamos comida de mentira desenhada para viciar. Existe uma geração cética à indústria alimentícia e farmacêutica — que busca clareza mental, força física e controle total sobre a própria biologia. A SELVA existe para essa geração.",
+    "",
   image: "/products/manifesto-tallow-trio.png",
   points: [
     {

@@ -6,10 +6,10 @@ export default function Ecosystem() {
   return (
     <section
       id="source"
-      className="bg-surface-container px-margin-mobile py-32 md:px-margin-desktop"
+      className="bg-surface-container px-margin-mobile py-20 md:px-margin-desktop md:py-32"
     >
       <div className="mx-auto max-w-container-max">
-        <Reveal className="mb-16 text-center">
+        <Reveal className="mb-10 text-center md:mb-16">
           <h2 className="font-serif mb-4 text-headline-lg-mobile text-on-surface uppercase md:text-headline-lg">
             {ecosystem.title}
           </h2>
@@ -18,18 +18,18 @@ export default function Ecosystem() {
           </p>
         </Reveal>
         <div className="grid h-auto grid-cols-1 gap-gutter md:h-[600px] md:grid-cols-4">
-          <Reveal className="metallic-border group relative overflow-hidden bg-surface-container md:col-span-2 md:row-span-2">
+          <Reveal className="metallic-border group relative h-105 overflow-hidden bg-surface-container md:col-span-2 md:row-span-2 md:h-auto">
             <img
-              className="h-full w-full object-cover opacity-50 transition-transform duration-1000 group-hover:scale-105"
+              className="absolute inset-0 h-full w-full object-cover opacity-50 transition-transform duration-1000 group-hover:scale-105"
               src={ecosystem.source.image}
               alt="Paisagem selvagem"
             />
-            <div className="absolute inset-0 flex flex-col justify-end p-12">
+            <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12">
               <Icon
                 name={ecosystem.source.icon}
                 className="mb-4 text-4xl text-secondary"
               />
-              <h3 className="font-serif mb-4 text-headline-lg text-on-surface uppercase">
+              <h3 className="font-serif mb-4 text-headline-lg-mobile text-on-surface uppercase md:text-headline-lg">
                 {ecosystem.source.title}
               </h3>
               <p className="text-body-md text-on-surface-variant">

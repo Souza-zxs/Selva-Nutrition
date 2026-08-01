@@ -20,7 +20,7 @@ export default function Product() {
 
   if (loading) {
     return (
-      <section className="min-h-screen bg-background px-margin-mobile pt-40 pb-32 md:px-margin-desktop">
+      <section className="min-h-screen bg-background px-margin-mobile pt-28 pb-20 md:px-margin-desktop md:pt-40 md:pb-32">
         <div className="mx-auto grid max-w-5xl gap-12 md:grid-cols-2">
           <div className="aspect-square animate-pulse bg-surface-container-lowest" />
           <div className="flex flex-col gap-4">
@@ -55,7 +55,7 @@ export default function Product() {
   }
 
   return (
-    <section className="min-h-screen bg-background px-margin-mobile pt-40 pb-32 md:px-margin-desktop">
+    <section className="min-h-screen bg-background px-margin-mobile pt-28 pb-20 md:px-margin-desktop md:pt-40 md:pb-32">
       <div className="mx-auto max-w-5xl">
         <Link
           to="/#colecao"

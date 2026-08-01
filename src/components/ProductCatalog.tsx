@@ -19,10 +19,10 @@ export default function ProductCatalog() {
   return (
     <section
       id="colecao"
-      className="bg-background px-margin-mobile py-32 md:px-margin-desktop"
+      className="bg-background px-margin-mobile py-20 md:px-margin-desktop md:py-32"
     >
       <div className="mx-auto max-w-container-max">
-        <Reveal className="mb-16 flex flex-col items-end justify-between gap-8 md:flex-row">
+        <Reveal className="mb-10 flex flex-col items-start justify-between gap-8 md:mb-16 md:flex-row md:items-end">
           <div>
             <span className="mb-4 block text-label-caps tracking-widest text-secondary uppercase">
               Nossa Linha
@@ -199,7 +199,7 @@ function NewsletterBand({ delay }: { delay: number }) {
   return (
     <Reveal
       delay={delay}
-      className="mt-20 flex flex-col items-center border-t border-outline-variant/15 pt-16 text-center"
+      className="mt-14 flex flex-col items-center border-t border-outline-variant/15 pt-12 text-center md:mt-20 md:pt-16"
     >
       <span className="mb-3 block text-label-caps tracking-widest text-secondary uppercase">
         Fique por dentro

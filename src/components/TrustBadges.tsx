@@ -3,9 +3,9 @@ import Reveal from "./motion/Reveal";
 
 export default function TrustBadges() {
   return (
-    <section className="bg-surface-container-low px-margin-mobile py-32 md:px-margin-desktop">
+    <section className="bg-surface-container-low px-margin-mobile py-20 md:px-margin-desktop md:py-32">
       <div className="mx-auto max-w-container-max">
-        <Reveal className="mb-16 text-center">
+        <Reveal className="mb-10 text-center md:mb-16">
           <span className="mb-4 block text-label-caps tracking-widest text-secondary uppercase">
             Tradição &amp; Qualidade
           </span>

@@ -6,9 +6,9 @@ export default function Manifesto() {
   return (
     <section
       id="manifesto"
-      className="bg-surface-container-low px-margin-mobile py-32 md:px-margin-desktop"
+      className="bg-surface-container-low px-margin-mobile py-20 md:px-margin-desktop md:py-32"
     >
-      <div className="relative mx-auto grid max-w-container-max items-center gap-16 md:grid-cols-2">
+      <div className="relative mx-auto grid max-w-container-max items-center gap-12 md:grid-cols-2 md:gap-16">
         <Reveal>
           <span className="mb-4 block text-label-caps tracking-widest text-secondary uppercase">
             {manifesto.eyebrow}

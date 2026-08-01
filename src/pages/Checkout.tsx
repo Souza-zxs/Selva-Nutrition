@@ -189,7 +189,7 @@ export default function Checkout() {
   }
 
   return (
-    <section className="min-h-screen bg-background px-margin-mobile pt-40 pb-32 md:px-margin-desktop">
+    <section className="min-h-screen bg-background px-margin-mobile pt-28 pb-20 md:px-margin-desktop md:pt-40 md:pb-32">
       <div className="mx-auto grid max-w-5xl gap-12 md:grid-cols-[1.4fr_1fr]">
         <div>
           <span className="mb-4 block text-label-caps tracking-widest text-secondary uppercase">
