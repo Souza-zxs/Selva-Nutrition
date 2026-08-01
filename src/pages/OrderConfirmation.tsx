@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { formatBRL } from "../lib/currency";
 import { supabase } from "../lib/supabase";
+import BackToHome from "../components/BackToHome";
 
 type OrderItem = {
   qty: number;
@@ -63,6 +64,7 @@ export default function OrderConfirmation() {
   return (
     <section className="min-h-screen bg-background px-margin-mobile pt-28 pb-20 md:px-margin-desktop md:pt-40 md:pb-32">
       <div className="mx-auto max-w-xl text-center">
+        <BackToHome className="mb-8 justify-center" />
         {loading && (
           <p className="text-on-surface-variant">Carregando pedido...</p>
         )}

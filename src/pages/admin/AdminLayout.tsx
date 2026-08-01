@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, Navigate, Outlet, useLocation } from "react-router-dom";
+import { Link, NavLink, Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useIsAdmin } from "../../hooks/useIsAdmin";
 import Icon from "../../components/Icon";
@@ -50,14 +50,14 @@ export default function AdminLayout() {
         }`}
       >
         <div className="flex items-center justify-between border-b border-outline-variant/15 px-6 py-8 md:px-8">
-          <div>
-            <span className="font-serif block text-xl tracking-tight text-secondary uppercase">
+          <Link to="/" className="group">
+            <span className="font-serif block text-xl tracking-tight text-secondary uppercase transition-colors group-hover:text-on-surface">
               Selva
             </span>
             <span className="mt-1 block text-label-caps text-on-surface-variant uppercase">
               Painel Admin
             </span>
-          </div>
+          </Link>
           <button
             aria-label="Fechar menu"
             onClick={() => setNavOpen(false)}
@@ -66,6 +66,13 @@ export default function AdminLayout() {
             <Icon name="close" className="text-xl" />
           </button>
         </div>
+        <Link
+          to="/"
+          className="flex items-center gap-3 border-b border-outline-variant/15 px-8 py-4 text-label-caps text-on-surface-variant uppercase transition-colors hover:bg-surface-container-low hover:text-secondary"
+        >
+          <Icon name="arrow_back" className="text-lg" />
+          Voltar à loja
+        </Link>
         <nav className="flex flex-1 flex-col gap-1 px-4 py-6">
           {NAV.map((item) => (
             <NavLink

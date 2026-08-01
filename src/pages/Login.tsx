@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import BackToHome from "../components/BackToHome";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 
@@ -28,6 +29,7 @@ export default function Login() {
   return (
     <section className="min-h-screen bg-background px-margin-mobile pt-28 pb-20 md:px-margin-desktop md:pt-40 md:pb-32">
       <div className="mx-auto max-w-md">
+        <BackToHome className="mb-8" />
         <span className="mb-4 block text-label-caps tracking-widest text-secondary uppercase">
           Bem-vindo de volta
         </span>

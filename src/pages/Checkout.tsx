@@ -8,6 +8,7 @@ import { effectivePrice } from "../lib/pricing";
 import { supabase } from "../lib/supabase";
 import { resolveErrorMessage } from "../lib/supabaseErrors";
 import { lookupCep } from "../lib/viacep";
+import BackToHome from "../components/BackToHome";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 
@@ -192,6 +193,7 @@ export default function Checkout() {
     <section className="min-h-screen bg-background px-margin-mobile pt-28 pb-20 md:px-margin-desktop md:pt-40 md:pb-32">
       <div className="mx-auto grid max-w-5xl gap-12 md:grid-cols-[1.4fr_1fr]">
         <div>
+          <BackToHome className="mb-8" />
           <span className="mb-4 block text-label-caps tracking-widest text-secondary uppercase">
             Finalizar Compra
           </span>

@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { formatBRL } from "../lib/currency";
 import { supabase } from "../lib/supabase";
+import BackToHome from "../components/BackToHome";
 import Icon from "../components/Icon";
 import { OrderStatusBadge } from "../components/admin/StatusBadge";
 import Button from "../components/ui/Button";
@@ -40,6 +41,7 @@ export default function MyOrders() {
   return (
     <section className="min-h-screen bg-background px-margin-mobile pt-28 pb-20 md:px-margin-desktop md:pt-40 md:pb-32">
       <div className="mx-auto max-w-3xl">
+        <BackToHome className="mb-8" />
         <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
           <div>
             <span className="mb-4 block text-label-caps tracking-widest text-secondary uppercase">
