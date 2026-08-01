@@ -70,7 +70,7 @@ export default function Navbar() {
             <Link
               to={user ? "/minha-conta" : "/login"}
               aria-label={user ? "Minha conta" : "Entrar"}
-              className="scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
+              className="-m-2 scale-95 p-2 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
               title={user?.email ?? undefined}
             >
               <Icon name="person" />
@@ -78,11 +78,11 @@ export default function Navbar() {
             <button
               aria-label={`Carrinho${itemCount > 0 ? ` (${itemCount} ${itemCount === 1 ? "item" : "itens"})` : ""}`}
               onClick={open}
-              className="relative scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
+              className="relative -m-2 scale-95 p-2 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
             >
               <Icon name="shopping_bag" />
               {itemCount > 0 && (
-                <span className="absolute -top-2.5 -right-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-[11px] font-bold text-primary-container">
+                <span className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-[11px] font-bold text-primary-container">
                   {itemCount}
                 </span>
               )}
@@ -92,7 +92,7 @@ export default function Navbar() {
                 to="/admin/produtos"
                 aria-label="Painel admin"
                 title="Painel admin"
-                className="scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
+                className="-m-2 scale-95 p-2 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:text-[28px]"
               >
                 <Icon name="inventory" />
               </Link>
@@ -110,7 +110,7 @@ export default function Navbar() {
             aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
-            className="scale-95 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:hidden"
+            className="-m-2 scale-95 p-2 text-2xl text-on-surface-variant transition-all hover:text-secondary active:scale-90 md:hidden"
           >
             <Icon name={menuOpen ? "close" : "menu"} />
           </button>
@@ -145,7 +145,7 @@ export default function Navbar() {
                       setMenuOpen(false);
                       handleAnchorNav(e, link.href);
                     }}
-                    className="text-label-caps text-on-surface-variant uppercase transition-colors duration-300 hover:text-secondary"
+                    className="-my-2 py-2 text-label-caps text-on-surface-variant uppercase transition-colors duration-300 hover:text-secondary"
                   >
                     {link.label}
                   </a>

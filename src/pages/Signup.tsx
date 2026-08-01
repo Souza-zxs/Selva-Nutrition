@@ -28,7 +28,7 @@ export default function Signup() {
 
   if (submitted) {
     return (
-      <section className="flex min-h-screen items-center justify-center bg-background px-margin-mobile pt-40 pb-32 md:px-margin-desktop">
+      <section className="flex min-h-screen items-center justify-center bg-background px-margin-mobile pt-28 pb-20 md:px-margin-desktop md:pt-40 md:pb-32">
         <div className="mx-auto max-w-md text-center">
           <h1 className="font-serif mb-4 text-headline-lg-mobile text-on-surface uppercase md:text-headline-lg">
             Quase lá
@@ -43,7 +43,7 @@ export default function Signup() {
   }
 
   return (
-    <section className="min-h-screen bg-background px-margin-mobile pt-40 pb-32 md:px-margin-desktop">
+    <section className="min-h-screen bg-background px-margin-mobile pt-28 pb-20 md:px-margin-desktop md:pt-40 md:pb-32">
       <div className="mx-auto max-w-md">
         <span className="mb-4 block text-label-caps tracking-widest text-secondary uppercase">
           Junte-se à elite

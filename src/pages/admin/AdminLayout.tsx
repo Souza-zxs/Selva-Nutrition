@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink, Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useIsAdmin } from "../../hooks/useIsAdmin";
@@ -14,6 +15,7 @@ export default function AdminLayout() {
   const { user, loading: authLoading, signOut } = useAuth();
   const location = useLocation();
   const isAdmin = useIsAdmin();
+  const [navOpen, setNavOpen] = useState(false);
 
   if (authLoading) {
     return <FullScreenMessage text="Carregando..." />;
@@ -34,20 +36,42 @@ export default function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <aside className="flex w-64 shrink-0 flex-col border-r border-outline-variant/15 bg-surface-container-lowest shadow-[4px_0_16px_rgba(0,0,0,0.25)]">
-        <div className="border-b border-outline-variant/15 px-8 py-8">
-          <span className="font-serif block text-xl tracking-tight text-secondary uppercase">
-            Selva
-          </span>
-          <span className="mt-1 block text-label-caps text-on-surface-variant uppercase">
-            Painel Admin
-          </span>
+      {navOpen && (
+        <div
+          aria-hidden
+          onClick={() => setNavOpen(false)}
+          className="fixed inset-0 z-30 bg-black/60 md:hidden"
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 max-w-[80vw] shrink-0 flex-col border-r border-outline-variant/15 bg-surface-container-lowest shadow-[4px_0_16px_rgba(0,0,0,0.25)] transition-transform duration-300 md:static md:translate-x-0 ${
+          navOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between border-b border-outline-variant/15 px-6 py-8 md:px-8">
+          <div>
+            <span className="font-serif block text-xl tracking-tight text-secondary uppercase">
+              Selva
+            </span>
+            <span className="mt-1 block text-label-caps text-on-surface-variant uppercase">
+              Painel Admin
+            </span>
+          </div>
+          <button
+            aria-label="Fechar menu"
+            onClick={() => setNavOpen(false)}
+            className="text-on-surface-variant hover:text-secondary md:hidden"
+          >
+            <Icon name="close" className="text-xl" />
+          </button>
         </div>
         <nav className="flex flex-1 flex-col gap-1 px-4 py-6">
           {NAV.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={() => setNavOpen(false)}
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-sm border-l-2 px-4 py-3 text-label-caps uppercase transition-colors ${
                   isActive
@@ -75,13 +99,20 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      <main className="flex-1">
-        <header className="border-b border-outline-variant/15 bg-surface-container-lowest/40 px-10 py-8">
-          <h1 className="text-xl font-bold tracking-tight text-on-surface uppercase">
+      <main className="min-w-0 flex-1">
+        <header className="flex items-center gap-4 border-b border-outline-variant/15 bg-surface-container-lowest/40 px-4 py-5 md:px-10 md:py-8">
+          <button
+            aria-label="Abrir menu"
+            onClick={() => setNavOpen(true)}
+            className="text-on-surface-variant hover:text-secondary md:hidden"
+          >
+            <Icon name="menu" className="text-2xl" />
+          </button>
+          <h1 className="text-lg font-bold tracking-tight text-on-surface uppercase md:text-xl">
             {currentLabel}
           </h1>
         </header>
-        <div className="px-10 py-8">
+        <div className="px-4 py-6 md:px-10 md:py-8">
           <Outlet />
         </div>
       </main>

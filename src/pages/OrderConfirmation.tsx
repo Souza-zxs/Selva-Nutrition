@@ -61,7 +61,7 @@ export default function OrderConfirmation() {
   }, [id]);
 
   return (
-    <section className="min-h-screen bg-background px-margin-mobile pt-40 pb-32 md:px-margin-desktop">
+    <section className="min-h-screen bg-background px-margin-mobile pt-28 pb-20 md:px-margin-desktop md:pt-40 md:pb-32">
       <div className="mx-auto max-w-xl text-center">
         {loading && (
           <p className="text-on-surface-variant">Carregando pedido...</p>

@@ -38,7 +38,7 @@ export default function MyOrders() {
   }
 
   return (
-    <section className="min-h-screen bg-background px-margin-mobile pt-40 pb-32 md:px-margin-desktop">
+    <section className="min-h-screen bg-background px-margin-mobile pt-28 pb-20 md:px-margin-desktop md:pt-40 md:pb-32">
       <div className="mx-auto max-w-3xl">
         <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
           <div>
