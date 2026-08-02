@@ -266,3 +266,4 @@ function NewsletterBand({ delay }: { delay: number }) {
     </Reveal>
   );
 }
+//oi
