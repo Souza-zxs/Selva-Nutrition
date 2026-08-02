@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { PLACEHOLDER_KIT_IDS } from "../data/catalogOverrides";
@@ -60,6 +60,23 @@ export default function ProductCatalog() {
   );
 }
 
+const CAROUSEL_INTERVAL_MS = 1000;
+
+function useCarouselIndex(length: number) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    setIndex(0);
+    if (length <= 1) return;
+    const id = setInterval(() => {
+      setIndex((i) => (i + 1) % length);
+    }, CAROUSEL_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [length]);
+
+  return index;
+}
+
 function ProductCard({
   product,
   delay,
@@ -76,6 +93,13 @@ function ProductCard({
   const isPlaceholder = PLACEHOLDER_KIT_IDS.has(product.id);
   const outOfStock = product.stock <= 0;
   const unavailable = outOfStock || isPlaceholder;
+  const gallery =
+    product.images && product.images.length > 0
+      ? product.images
+      : product.image
+        ? [product.image]
+        : [];
+  const activeImageIndex = useCarouselIndex(gallery.length);
 
   function handleAdd() {
     addItem(product, qty);
@@ -96,14 +120,23 @@ function ProductCard({
           {isPlaceholder ? "Em breve" : "Esgotado"}
         </span>
       )}
-      {product.image ? (
-        <img
-          alt={product.name}
-          className={`h-full w-full object-contain transition-transform duration-500 ${
+      {gallery.length > 0 ? (
+        <div
+          className={`relative h-full w-full transition-transform duration-500 ${
             unavailable ? "opacity-40 grayscale" : "group-hover:scale-105"
           }`}
-          src={product.image}
-        />
+        >
+          {gallery.map((src, index) => (
+            <img
+              key={src}
+              alt={product.name}
+              className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-500 ease-in-out ${
+                index === activeImageIndex ? "opacity-100" : "opacity-0"
+              }`}
+              src={src}
+            />
+          ))}
+        </div>
       ) : (
         <Icon
           name={product.icon ?? "spa"}

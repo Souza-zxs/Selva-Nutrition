@@ -21,7 +21,7 @@ export default function AdminProductForm() {
   const { id } = useParams<{ id: string }>();
   const isNew = !id;
   const navigate = useNavigate();
-  const fileInput = useRef<HTMLInputElement>(null);
+  const fileInputs = useRef<(HTMLInputElement | null)[]>([]);
 
   const [slug, setSlug] = useState("");
   const [slugEdited, setSlugEdited] = useState(false);
@@ -29,7 +29,7 @@ export default function AdminProductForm() {
   const [tag, setTag] = useState("");
   const [body, setBody] = useState("");
   const [price, setPrice] = useState("");
-  const [image, setImage] = useState("");
+  const [images, setImages] = useState<string[]>(["", "", ""]);
   const [stock, setStock] = useState("0");
   const [active, setActive] = useState(true);
   const [weightKg, setWeightKg] = useState("0.3");
@@ -38,8 +38,8 @@ export default function AdminProductForm() {
 
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
+  const [uploading, setUploading] = useState<boolean[]>([false, false, false]);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -57,7 +57,13 @@ export default function AdminProductForm() {
           setTag(data.tag ?? "");
           setBody(data.body ?? "");
           setPrice(String(data.price));
-          setImage(data.image ?? "");
+          const gallery: string[] =
+            data.images?.length > 0
+              ? data.images
+              : data.image
+                ? [data.image]
+                : [];
+          setImages([gallery[0] ?? "", gallery[1] ?? "", gallery[2] ?? ""]);
           setStock(String(data.stock));
           setActive(data.active);
           setWeightKg(String(data.weight_kg));
@@ -73,9 +79,9 @@ export default function AdminProductForm() {
     if (!slugEdited) setSlug(slugify(value));
   }
 
-  async function handleFile(file: File | null | undefined) {
+  async function handleFile(index: number, file: File | null | undefined) {
     if (!file) return;
-    setUploading(true);
+    setUploading((prev) => prev.map((v, i) => (i === index ? true : v)));
     setError(null);
 
     const formData = new FormData();
@@ -86,22 +92,22 @@ export default function AdminProductForm() {
       { body: formData },
     );
 
-    setUploading(false);
+    setUploading((prev) => prev.map((v, i) => (i === index ? false : v)));
     if (invokeError || data?.error) {
       setError(data?.error ?? invokeError.message);
       return;
     }
-    setImage(data.url);
+    setImages((prev) => prev.map((v, i) => (i === index ? data.url : v)));
   }
 
-  function handleDrop(e: DragEvent<HTMLDivElement>) {
+  function handleDrop(index: number, e: DragEvent<HTMLDivElement>) {
     e.preventDefault();
-    setDragOver(false);
-    handleFile(e.dataTransfer.files[0]);
+    setDragOverIndex(null);
+    handleFile(index, e.dataTransfer.files[0]);
   }
 
-  function handleFileInput(e: ChangeEvent<HTMLInputElement>) {
-    handleFile(e.target.files?.[0]);
+  function handleFileInput(index: number, e: ChangeEvent<HTMLInputElement>) {
+    handleFile(index, e.target.files?.[0]);
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -121,13 +127,16 @@ export default function AdminProductForm() {
 
     setSaving(true);
 
+    const gallery = images.filter(Boolean);
+
     const payload = {
       slug,
       name,
       tag: tag || null,
       body: body || null,
       price: Number(price),
-      image: image || null,
+      image: gallery[0] ?? null,
+      images: gallery,
       stock: Number(stock),
       active,
       weight_kg: Number(weightKg),
@@ -159,59 +168,76 @@ export default function AdminProductForm() {
       </Link>
 
       <form className="grid gap-10 md:grid-cols-[220px_1fr]" onSubmit={handleSubmit}>
-        <div>
-          <span className={labelClass}>Foto</span>
-          <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragOver(true);
-            }}
-            onDragLeave={() => setDragOver(false)}
-            onDrop={handleDrop}
-            onClick={() => fileInput.current?.click()}
-            className={`metallic-border relative flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 bg-on-surface p-4 text-center transition-colors ${
-              dragOver ? "ring-2 ring-secondary" : ""
-            }`}
-          >
-            {image ? (
-              <img
-                src={image}
-                alt={name || "Produto"}
-                className="h-full w-full object-contain"
-              />
-            ) : (
-              <>
-                <Icon
-                  name="upload"
-                  className="text-3xl text-primary-container opacity-60"
+        <div className="flex flex-col gap-6">
+          <span className={labelClass}>Fotos (até 3)</span>
+          {[0, 1, 2].map((index) => (
+            <div key={index}>
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragOverIndex(index);
+                }}
+                onDragLeave={() => setDragOverIndex(null)}
+                onDrop={(e) => handleDrop(index, e)}
+                onClick={() => fileInputs.current[index]?.click()}
+                className={`metallic-border relative flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 bg-on-surface p-4 text-center transition-colors ${
+                  dragOverIndex === index ? "ring-2 ring-secondary" : ""
+                }`}
+              >
+                {images[index] ? (
+                  <img
+                    src={images[index]}
+                    alt={`${name || "Produto"} — foto ${index + 1}`}
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <>
+                    <Icon
+                      name="upload"
+                      className="text-3xl text-primary-container opacity-60"
+                    />
+                    <span className="text-xs text-primary-container opacity-70">
+                      {index === 0
+                        ? "Arraste uma foto ou clique para escolher"
+                        : "Foto opcional"}
+                    </span>
+                  </>
+                )}
+                {uploading[index] && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-xs text-on-surface">
+                    Enviando...
+                  </div>
+                )}
+                <input
+                  ref={(el) => {
+                    fileInputs.current[index] = el;
+                  }}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  className="hidden"
+                  onChange={(e) => handleFileInput(index, e)}
                 />
-                <span className="text-xs text-primary-container opacity-70">
-                  Arraste uma foto ou clique para escolher
-                </span>
-              </>
-            )}
-            {uploading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-xs text-on-surface">
-                Enviando...
               </div>
-            )}
-            <input
-              ref={fileInput}
-              type="file"
-              accept="image/png,image/jpeg,image/webp,image/svg+xml"
-              className="hidden"
-              onChange={handleFileInput}
-            />
-          </div>
-          {image && (
-            <button
-              type="button"
-              onClick={() => setImage("")}
-              className="mt-2 text-xs text-on-surface-variant hover:text-error"
-            >
-              Remover foto
-            </button>
-          )}
+              {images[index] && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setImages((prev) =>
+                      prev.map((v, i) => (i === index ? "" : v)),
+                    )
+                  }
+                  className="mt-2 text-xs text-on-surface-variant hover:text-error"
+                >
+                  Remover foto
+                </button>
+              )}
+            </div>
+          ))}
+          <p className="text-xs text-on-surface-variant/70">
+            A primeira foto é a capa do produto e aparece na listagem quando
+            só há uma imagem. Com 2 ou 3 fotos, o catálogo alterna entre elas
+            automaticamente.
+          </p>
         </div>
 
         <div className="flex flex-col gap-6">
@@ -389,7 +415,7 @@ export default function AdminProductForm() {
 
           <Button
             type="submit"
-            disabled={saving || uploading}
+            disabled={saving || uploading.some(Boolean)}
             className="mt-2 w-fit px-8 py-4"
           >
             {saving ? "Salvando..." : "Salvar produto"}
