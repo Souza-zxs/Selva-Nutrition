@@ -20,6 +20,7 @@ import AdminOrders from "./pages/admin/AdminOrders";
 import AdminOrderDetail from "./pages/admin/AdminOrderDetail";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminReviews from "./pages/admin/AdminReviews";
+import NotFound from "./pages/NotFound";
 import { useLenis } from "./hooks/useLenis";
 
 function App() {
@@ -53,6 +54,7 @@ function App() {
           <Route path="cupons" element={<AdminCoupons />} />
           <Route path="avaliacoes" element={<AdminReviews />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
       {!isAdmin && (
         <>

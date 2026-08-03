@@ -267,4 +267,3 @@ function NewsletterBand({ delay }: { delay: number }) {
   );
 }
 
-//TESTE FINAL

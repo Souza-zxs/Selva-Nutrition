@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
     const { data: order } = await supabaseAdmin
       .from("orders")
       .select(
-        "id, status, contact, subtotal, shipping_cost, shipping_service, coupon_code",
+        "id, status, contact, subtotal, shipping_cost, shipping_service, coupon_code, created_at",
       )
       .eq("id", orderId)
       .single();
@@ -106,7 +106,9 @@ Deno.serve(async (req) => {
             to: contact.email,
             customerName: contact.name ?? "cliente",
             orderId: order.id,
+            createdAt: order.created_at,
             items: (items ?? []).map((item) => ({
+              productId: item.product_id,
               name: (item.products as { name?: string } | null)?.name ?? "Produto",
               qty: item.qty,
               unitPrice: item.unit_price,

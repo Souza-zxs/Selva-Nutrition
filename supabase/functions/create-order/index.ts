@@ -188,7 +188,9 @@ Deno.serve(async (req) => {
           to: contactInfo.email,
           customerName: contactInfo.name ?? "cliente",
           orderId: order.id,
+          createdAt: order.created_at,
           items: orderItems.map((item) => ({
+            productId: item.product_id,
             name: item.name,
             qty: item.qty,
             unitPrice: item.unit_price,

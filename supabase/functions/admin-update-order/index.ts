@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
 
     const { data: order, error: orderError } = await supabaseAdmin
       .from("orders")
-      .select("id, status, contact")
+      .select("id, status, contact, created_at")
       .eq("id", orderId)
       .single();
 
@@ -93,6 +93,7 @@ Deno.serve(async (req) => {
             to: contact.email,
             customerName: contact.name ?? "cliente",
             orderId,
+            createdAt: order.created_at,
             siteUrl,
           });
         } catch (err) {
@@ -108,6 +109,7 @@ Deno.serve(async (req) => {
           to: contact.email,
           customerName: contact.name ?? "cliente",
           orderId,
+          createdAt: order.created_at,
           trackingCode: tracking_code ?? null,
           siteUrl,
         });
