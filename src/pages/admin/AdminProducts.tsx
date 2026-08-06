@@ -55,7 +55,13 @@ export default function AdminProducts() {
       .eq("id", product.id);
     if (error) {
       setProducts(previous);
-      alert(`Não foi possível excluir o produto: ${error.message}`);
+      if (error.code === "23503") {
+        alert(
+          `"${product.name}" já foi vendido em pedidos anteriores e não pode ser excluído (isso apagaria o histórico desses pedidos). Use "Ocultar" para removê-lo da loja sem perder o histórico.`,
+        );
+      } else {
+        alert(`Não foi possível excluir o produto: ${error.message}`);
+      }
     }
   }
 
