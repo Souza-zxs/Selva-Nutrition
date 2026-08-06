@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Icon from "../components/Icon";
+import ProductDescription from "../components/ProductDescription";
+import ProductGallery from "../components/ProductGallery";
 import ProductReviews from "../components/ProductReviews";
 import ShippingEstimate from "../components/ShippingEstimate";
 import { StockBadge } from "../components/admin/StatusBadge";
@@ -46,6 +48,12 @@ export default function Product() {
   const isOnSale = product.is_featured && product.sale_price != null;
   const discount = discountPercent(product);
   const outOfStock = product.stock <= 0;
+  const gallery =
+    product.images && product.images.length > 0
+      ? product.images
+      : product.image
+        ? [product.image]
+        : [];
 
   function handleAdd() {
     if (!product) return;
@@ -64,98 +72,97 @@ export default function Product() {
           <Icon name="arrow_back" /> Voltar à coleção
         </Link>
 
-        <div className="grid gap-12 md:grid-cols-2">
-          <div className="metallic-border relative flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-10">
-            {isOnSale && (
-              <span className="absolute top-4 left-4 z-10 bg-error px-3 py-1 text-[10px] font-semibold tracking-widest text-on-surface uppercase">
-                Oferta{discount ? ` -${discount}%` : ""}
-              </span>
-            )}
-            {product.image ? (
-              <img
-                alt={product.name}
-                className="h-full w-full object-contain"
-                src={product.image}
-              />
-            ) : (
-              <Icon
-                name={product.icon ?? "spa"}
-                className="text-8xl text-primary-container opacity-40"
-              />
-            )}
+        <div className="grid items-start gap-12 md:grid-cols-2 lg:gap-16">
+          <div className="md:sticky md:top-32">
+            <ProductGallery images={gallery} productName={product.name} fallbackIcon={product.icon}>
+              {isOnSale && (
+                <span className="absolute top-4 left-4 z-10 bg-error px-3 py-1 text-[10px] font-semibold tracking-widest text-on-surface uppercase">
+                  Oferta{discount ? ` -${discount}%` : ""}
+                </span>
+              )}
+            </ProductGallery>
           </div>
 
-          <div>
-            {product.tag && (
-              <span className="mb-3 block text-[10px] tracking-widest text-secondary">
-                {product.tag}
-              </span>
-            )}
-            <h1 className="font-serif mb-4 text-headline-lg-mobile text-on-surface uppercase md:text-headline-lg">
-              {product.name}
-            </h1>
-
-            <div className="mb-6">
+          <div className="flex flex-col">
+            <div className="border-b border-outline-variant/15 pb-6">
+              {product.tag && (
+                <span className="mb-3 block text-[10px] tracking-widest text-secondary">
+                  {product.tag}
+                </span>
+              )}
+              <h1 className="font-serif mb-4 text-headline-lg-mobile text-on-surface uppercase md:text-headline-lg">
+                {product.name}
+              </h1>
               <StockBadge stock={product.stock} />
             </div>
 
-            {product.body && (
-              <p className="mb-4 text-on-surface-variant">{product.body}</p>
-            )}
-            {product.narrative && (
-              <p className="mb-6 text-sm text-on-surface-variant">
-                {product.narrative}
-              </p>
+            <div className="border-b border-outline-variant/15 py-6">
+              {isOnSale ? (
+                <div className="flex items-baseline gap-3">
+                  <span className="text-sm text-on-surface-variant line-through">
+                    {formatBRL(product.price)}
+                  </span>
+                  <span className="font-serif text-3xl text-secondary">
+                    {formatBRL(product.sale_price!)}
+                  </span>
+                </div>
+              ) : (
+                <span className="font-serif block text-3xl text-on-surface">
+                  {formatBRL(product.price)}
+                </span>
+              )}
+
+              <div className="mt-6 flex items-center gap-4">
+                <QtyStepper
+                  value={qty}
+                  onChange={setQty}
+                  max={outOfStock ? 1 : product.stock}
+                />
+                <Button
+                  onClick={handleAdd}
+                  disabled={outOfStock}
+                  className="flex-1 py-4"
+                >
+                  {outOfStock ? "Esgotado" : justAdded ? "Adicionado!" : "Comprar"}
+                </Button>
+              </div>
+
+              <div className="mt-4">
+                <ShippingEstimate
+                  weightKg={product.weight_kg * qty}
+                  subtotal={effectivePrice(product) * qty}
+                />
+              </div>
+            </div>
+
+            {(product.body || product.narrative) && (
+              <div className="border-b border-outline-variant/15 py-6">
+                <ProductDescription
+                  key={product.id}
+                  body={product.body}
+                  narrative={product.narrative}
+                />
+              </div>
             )}
 
             {product.specs && product.specs.length > 0 && (
-              <ul className="mb-8 flex flex-col gap-2">
-                {product.specs.map((spec) => (
-                  <li
-                    key={spec}
-                    className="flex items-center gap-2 text-sm text-on-surface-variant"
-                  >
-                    <Icon name="check_circle" className="text-secondary" />
-                    {spec}
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {isOnSale ? (
-              <div className="mb-8 flex items-baseline gap-3">
-                <span className="text-sm text-on-surface-variant line-through">
-                  {formatBRL(product.price)}
+              <div className="py-6">
+                <span className="mb-4 block text-label-caps tracking-widest text-secondary uppercase">
+                  Especificações
                 </span>
-                <span className="text-2xl text-secondary">
-                  {formatBRL(product.sale_price!)}
-                </span>
+                <ul className="flex flex-col gap-2">
+                  {product.specs.map((spec) => (
+                    <li
+                      key={spec}
+                      className="flex items-center gap-2 text-sm text-on-surface-variant"
+                    >
+                      <Icon name="check_circle" className="text-secondary" />
+                      {spec}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            ) : (
-              <span className="mb-8 block text-2xl text-on-surface">
-                {formatBRL(product.price)}
-              </span>
             )}
-
-            <div className="mb-8 flex items-center gap-4">
-              <QtyStepper
-                value={qty}
-                onChange={setQty}
-                max={outOfStock ? 1 : product.stock}
-              />
-              <Button
-                onClick={handleAdd}
-                disabled={outOfStock}
-                className="flex-1 py-4"
-              >
-                {outOfStock ? "Esgotado" : justAdded ? "Adicionado!" : "Comprar"}
-              </Button>
-            </div>
-
-            <ShippingEstimate
-              weightKg={product.weight_kg * qty}
-              subtotal={effectivePrice(product) * qty}
-            />
           </div>
         </div>
 

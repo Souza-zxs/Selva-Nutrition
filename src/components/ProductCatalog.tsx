@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useProducts } from "../hooks/useProducts";
 import { formatBRL } from "../lib/currency";
+import { getExcerpt } from "../lib/parseDescription";
 import { discountPercent } from "../lib/pricing";
 import type { Product } from "../types/product";
 import { StockBadge } from "./admin/StatusBadge";
@@ -155,7 +156,7 @@ function ProductCard({
     >
       <Link
         to={`/produto/${product.slug}`}
-        className="metallic-border photo-frame-vignette group relative mb-8 flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-6"
+        className="metallic-border photo-frame-vignette group relative mb-8 flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-2"
       >
         {media}
       </Link>
@@ -167,8 +168,8 @@ function ProductCard({
           {product.name}
         </h3>
       </Link>
-      <p className="mb-4 flex-grow text-sm text-on-surface-variant">
-        {product.body}
+      <p className="mb-4 line-clamp-3 grow text-sm text-on-surface-variant">
+        {getExcerpt(product.body)}
       </p>
       {!outOfStock && product.stock <= 10 && (
         <div className="mb-4">
