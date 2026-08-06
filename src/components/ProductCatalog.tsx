@@ -1,7 +1,7 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { PLACEHOLDER_KIT_IDS } from "../data/catalogOverrides";
 import { useProducts } from "../hooks/useProducts";
 import { formatBRL } from "../lib/currency";
 import { discountPercent } from "../lib/pricing";
@@ -60,7 +60,8 @@ export default function ProductCatalog() {
   );
 }
 
-const CAROUSEL_INTERVAL_MS = 1000;
+const CAROUSEL_INTERVAL_MS = 3800;
+const CAROUSEL_EASE = [0.16, 1, 0.3, 1] as const;
 
 function useCarouselIndex(length: number) {
   const [index, setIndex] = useState(0);
@@ -90,9 +91,8 @@ function ProductCard({
 
   const isOnSale = product.is_featured && product.sale_price != null;
   const discount = discountPercent(product);
-  const isPlaceholder = PLACEHOLDER_KIT_IDS.has(product.id);
   const outOfStock = product.stock <= 0;
-  const unavailable = outOfStock || isPlaceholder;
+  const unavailable = outOfStock;
   const gallery =
     product.images && product.images.length > 0
       ? product.images
@@ -117,25 +117,27 @@ function ProductCard({
       )}
       {unavailable && (
         <span className="absolute top-3 right-3 z-10 border border-outline-variant/40 bg-surface-container-lowest/90 px-3 py-1 text-[10px] font-semibold tracking-widest text-on-surface-variant uppercase backdrop-blur-sm">
-          {isPlaceholder ? "Em breve" : "Esgotado"}
+          Esgotado
         </span>
       )}
       {gallery.length > 0 ? (
         <div
-          className={`relative h-full w-full transition-transform duration-500 ${
+          className={`relative h-full w-full overflow-hidden transition-transform duration-500 ${
             unavailable ? "opacity-40 grayscale" : "group-hover:scale-105"
           }`}
         >
-          {gallery.map((src, index) => (
-            <img
-              key={src}
+          <AnimatePresence initial={false}>
+            <motion.img
+              key={gallery[activeImageIndex]}
               alt={product.name}
-              className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-500 ease-in-out ${
-                index === activeImageIndex ? "opacity-100" : "opacity-0"
-              }`}
-              src={src}
+              src={gallery[activeImageIndex]}
+              className="absolute inset-0 h-full w-full object-contain"
+              initial={{ opacity: 0, scale: 1.07, filter: "blur(8px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 0.96, filter: "blur(8px)" }}
+              transition={{ duration: 1, ease: CAROUSEL_EASE }}
             />
-          ))}
+          </AnimatePresence>
         </div>
       ) : (
         <Icon
@@ -151,36 +153,24 @@ function ProductCard({
       className="product-card flex flex-col rounded-sm p-8 shadow-lg shadow-black/30 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50"
       delay={delay}
     >
-      {isPlaceholder ? (
-        <div className="metallic-border photo-frame-vignette group relative mb-8 flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-6">
-          {media}
-        </div>
-      ) : (
-        <Link
-          to={`/produto/${product.slug}`}
-          className="metallic-border photo-frame-vignette group relative mb-8 flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-6"
-        >
-          {media}
-        </Link>
-      )}
+      <Link
+        to={`/produto/${product.slug}`}
+        className="metallic-border photo-frame-vignette group relative mb-8 flex aspect-square items-center justify-center overflow-hidden bg-on-surface p-6"
+      >
+        {media}
+      </Link>
       <span className="mb-2 block text-[10px] tracking-widest text-secondary">
         {product.tag}
       </span>
-      {isPlaceholder ? (
-        <h3 className="font-serif mb-3 text-2xl text-on-surface uppercase">
+      <Link to={`/produto/${product.slug}`}>
+        <h3 className="font-serif mb-3 text-2xl text-on-surface uppercase transition-colors hover:text-secondary">
           {product.name}
         </h3>
-      ) : (
-        <Link to={`/produto/${product.slug}`}>
-          <h3 className="font-serif mb-3 text-2xl text-on-surface uppercase transition-colors hover:text-secondary">
-            {product.name}
-          </h3>
-        </Link>
-      )}
+      </Link>
       <p className="mb-4 flex-grow text-sm text-on-surface-variant">
         {product.body}
       </p>
-      {!isPlaceholder && !outOfStock && product.stock <= 10 && (
+      {!outOfStock && product.stock <= 10 && (
         <div className="mb-4">
           <StockBadge stock={product.stock} />
         </div>
@@ -206,13 +196,11 @@ function ProductCard({
           max={outOfStock ? 1 : product.stock}
         />
         <Button onClick={handleAdd} disabled={unavailable} className="flex-1 py-3">
-          {isPlaceholder
-            ? "Em breve"
-            : outOfStock
-              ? "Esgotado"
-              : justAdded
-                ? "Adicionado!"
-                : "Comprar"}
+          {outOfStock
+            ? "Esgotado"
+            : justAdded
+              ? "Adicionado!"
+              : "Comprar"}
         </Button>
       </div>
     </Reveal>

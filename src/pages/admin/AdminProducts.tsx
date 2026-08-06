@@ -27,15 +27,36 @@ export default function AdminProducts() {
   }, []);
 
   async function toggleActive(product: Product) {
+    const nextActive = !product.active;
     setProducts((prev) =>
-      prev.map((p) =>
-        p.id === product.id ? { ...p, active: !p.active } : p,
-      ),
+      prev.map((p) => (p.id === product.id ? { ...p, active: nextActive } : p)),
     );
-    await supabase
+    const { error } = await supabase
       .from("products")
-      .update({ active: !product.active })
+      .update({ active: nextActive })
       .eq("id", product.id);
+    if (error) {
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === product.id ? { ...p, active: product.active } : p,
+        ),
+      );
+      alert(`Não foi possível atualizar a visibilidade: ${error.message}`);
+    }
+  }
+
+  async function deleteProduct(product: Product) {
+    if (!confirm(`Excluir "${product.name}" permanentemente?`)) return;
+    const previous = products;
+    setProducts((prev) => prev.filter((p) => p.id !== product.id));
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", product.id);
+    if (error) {
+      setProducts(previous);
+      alert(`Não foi possível excluir o produto: ${error.message}`);
+    }
   }
 
   const filtered = useMemo(() => {
@@ -148,6 +169,12 @@ export default function AdminProducts() {
                         className="text-on-surface-variant hover:text-secondary"
                       >
                         {product.active ? "Ocultar" : "Mostrar"}
+                      </button>
+                      <button
+                        onClick={() => deleteProduct(product)}
+                        className="text-on-surface-variant hover:text-error"
+                      >
+                        Excluir
                       </button>
                     </div>
                   </td>
